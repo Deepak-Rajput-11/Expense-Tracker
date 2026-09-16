@@ -21,3 +21,12 @@ def add_expense(date, category, amount, description):
         (date, category, amount, description),
     )
     conn.commit()
+
+
+def view_expenses():
+    cursor.execute("SELECT * FROM expenses")
+    expenses = cursor.fetchall()
+    return expenses
+
+
+print(view_expenses())
