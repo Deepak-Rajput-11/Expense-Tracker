@@ -14,6 +14,10 @@ CREATE TABLE IF NOT EXISTS expenses (
 )
 """)
 
-conn.commit()
 
-conn.close()
+def add_expense(date, category, amount, description):
+    cursor.execute(
+        "INSERT INTO expenses (date, category, amount, description) VALUES (?, ?, ?, ?)",
+        (date, category, amount, description),
+    )
+    conn.commit()
