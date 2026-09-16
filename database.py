@@ -29,4 +29,3 @@ def view_expenses():
     return expenses
 
 
-print(view_expenses())
