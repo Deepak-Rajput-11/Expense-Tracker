@@ -28,6 +28,15 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Implemented `view_expenses()`
 - Added `.gitignore` for the database file
 
+## Day 2 - Database CRUD Operations
+
+- Implemented search expense by ID
+- Used `WHERE` conditions and `fetchone()`
+- Implemented update expense functionality
+- Implemented delete expense functionality
+- Used parameterized SQL queries for database operations
+- Tested search, update, and delete operations successfully
+
 ## Technologies Used
 
 - Python

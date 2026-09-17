@@ -29,3 +29,24 @@ def view_expenses():
     return expenses
 
 
+def search_expense(expense_id):
+    cursor.execute("SELECT * FROM expenses WHERE expense_id = ?", (expense_id,))
+    expense = cursor.fetchone()
+    return expense
+
+
+def update_expense(expense_id, date, category, amount, description):
+    cursor.execute(
+        """
+        UPDATE expenses
+        SET date = ?, category = ?, amount = ?, description = ?
+        WHERE expense_id = ?
+        """,
+        (date, category, amount, description, expense_id),
+    )
+    conn.commit()
+
+
+def delete_expense(expense_id):
+    cursor.execute("DELETE FROM expenses WHERE expense_id = ?", (expense_id,))
+    conn.commit()
