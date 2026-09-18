@@ -37,6 +37,16 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Used parameterized SQL queries for database operations
 - Tested search, update, and delete operations successfully
 
+## Day 3 - Input Validation
+
+- Created a separate `validation.py` module
+- Implemented amount validation
+- Added checks for numeric and positive expense amounts
+- Implemented predefined category validation
+- Implemented date validation using Python `datetime`
+- Prevented invalid and future dates
+- Tested all validation functions successfully
+
 ## Technologies Used
 
 - Python
