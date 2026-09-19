@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS expenses (
 )
 """)
 
+conn.commit()
+
 
 def add_expense(date, category, amount, description):
     cursor.execute(
@@ -50,3 +52,15 @@ def update_expense(expense_id, date, category, amount, description):
 def delete_expense(expense_id):
     cursor.execute("DELETE FROM expenses WHERE expense_id = ?", (expense_id,))
     conn.commit()
+
+
+def filter_by_category(category):
+    cursor.execute("SELECT * FROM expenses WHERE category = ?", (category,))
+    expenses = cursor.fetchall()
+    return expenses
+
+
+def filter_by_date(date):
+    cursor.execute("SELECT * FROM expenses WHERE date = ?", (date,))
+    expenses = cursor.fetchall()
+    return expenses

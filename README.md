@@ -47,6 +47,14 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Prevented invalid and future dates
 - Tested all validation functions successfully
 
+## Day 4 - Expense Filtering
+
+- Implemented expense filtering by category
+- Implemented expense filtering by date
+- Used SQL `WHERE` conditions for filtering
+- Used `fetchall()` to retrieve multiple matching expense records
+- Tested category and date filters successfully
+
 ## Technologies Used
 
 - Python
