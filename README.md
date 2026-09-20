@@ -55,6 +55,16 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Used `fetchall()` to retrieve multiple matching expense records
 - Tested category and date filters successfully
 
+## Day 5 - Spending Reports & Pandas Integration
+
+- Created a separate `reports.py` module
+- Integrated Pandas with SQLite expense data
+- Converted expense records into a Pandas DataFrame
+- Implemented total spending calculation
+- Implemented category-wise spending using `groupby()`
+- Created a reusable DataFrame helper function to avoid duplicate code
+- Tested spending reports successfully
+
 ## Technologies Used
 
 - Python
