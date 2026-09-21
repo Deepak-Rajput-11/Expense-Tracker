@@ -65,6 +65,17 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Created a reusable DataFrame helper function to avoid duplicate code
 - Tested spending reports successfully
 
+## Day 6 - Backend Integration & Testing
+
+- Integrated database, validation, and reporting modules
+- Tested adding and viewing expenses
+- Tested searching and updating expenses
+- Tested expense deletion
+- Tested category and date filters
+- Tested total and category-wise spending reports
+- Verified invalid expense data is rejected before database insertion
+- Confirmed the complete backend workflow is working correctly
+
 ## Technologies Used
 
 - Python
