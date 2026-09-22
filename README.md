@@ -76,6 +76,19 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Verified invalid expense data is rejected before database insertion
 - Confirmed the complete backend workflow is working correctly
 
+## Day 7 - GUI Foundation & Add Expense Integration
+
+- Created a separate `gui.py` module using Tkinter
+- Built the main Expense Tracker window
+- Created input fields for date, category, amount, and description
+- Added a predefined category dropdown
+- Connected GUI inputs with existing validation functions
+- Connected the Add Expense button with the SQLite database
+- Added success and error message boxes
+- Added automatic form clearing after successful expense insertion
+- Added a View Expenses button and connected it with the database
+- Tested GUI-to-database integration successfully
+
 ## Technologies Used
 
 - Python
