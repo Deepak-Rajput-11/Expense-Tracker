@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, ttk
 
 from database import add_expense, view_expenses
 from validation import validate_date, validate_category, validate_amount
@@ -31,7 +31,12 @@ def handle_add_expense():
 
 def handle_view_expenses():
     expenses = view_expenses()
-    print(expenses)
+
+    for row in expense_table.get_children():
+        expense_table.delete(row)
+
+    for expense in expenses:
+        expense_table.insert("", tk.END, values=expense)
 
 
 root = tk.Tk()
@@ -78,5 +83,30 @@ add_button.pack(pady=15)
 
 view_button = tk.Button(root, text="View Expenses", command=handle_view_expenses)
 view_button.pack(pady=5)
+
+columns = ("ID", "Date", "Category", "Amount", "Description")
+
+table_frame = tk.Frame(root)
+table_frame.pack(pady=10)
+
+expense_table = ttk.Treeview(
+    table_frame, columns=columns, show="headings", height=8, selectmode="browse"
+)
+
+scrollbar = ttk.Scrollbar(table_frame, orient="vertical", command=expense_table.yview)
+
+expense_table.configure(yscrollcommand=scrollbar.set)
+
+for column in columns:
+    expense_table.heading(column, text=column)
+
+expense_table.column("ID", width=50)
+expense_table.column("Date", width=100)
+expense_table.column("Category", width=100)
+expense_table.column("Amount", width=80)
+expense_table.column("Description", width=180)
+
+expense_table.pack(side="left")
+scrollbar.pack(side="right", fill="y")
 
 root.mainloop()

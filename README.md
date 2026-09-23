@@ -89,6 +89,17 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Added a View Expenses button and connected it with the database
 - Tested GUI-to-database integration successfully
 
+## Day 8 - View Expenses Table
+
+- Added a Treeview table to display expense records in the GUI
+- Connected the View Expenses button with the Treeview
+- Displayed SQLite expense records in rows and columns
+- Added column headings and adjusted column widths
+- Prevented duplicate rows when refreshing expense data
+- Added a vertical scrollbar for larger expense lists
+- Configured the table height for better layout
+- Enabled single-row selection for future update and delete operations
+
 ## Technologies Used
 
 - Python
