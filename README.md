@@ -100,6 +100,18 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Configured the table height for better layout
 - Enabled single-row selection for future update and delete operations
 
+## Day 9 - Search & Delete Expense GUI
+
+- Added expense search by ID
+- Connected the search feature with the SQLite database
+- Displayed searched expenses directly in the Treeview
+- Added validation for empty and nonexistent expense searches
+- Added single-row expense deletion from the Treeview
+- Retrieved the database expense ID from the selected table row
+- Added delete confirmation before removing an expense
+- Added success and error message boxes for deletion
+- Automatically refreshed the expense table after deletion
+
 ## Technologies Used
 
 - Python
