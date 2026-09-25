@@ -112,6 +112,19 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Added success and error message boxes for deletion
 - Automatically refreshed the expense table after deletion
 
+## Day 10 - Update Expense GUI
+
+- Added Edit Selected functionality to the expense table
+- Loaded selected expense data into the input fields
+- Added tracking for the expense currently being edited
+- Added Update Expense functionality
+- Connected GUI updates with the SQLite database
+- Applied date, category, and amount validation before updating
+- Added error handling when no expense is selected for editing
+- Added success message after a successful update
+- Automatically refreshed the expense table after updating
+- Reset the form and editing state after a successful update
+
 ## Technologies Used
 
 - Python

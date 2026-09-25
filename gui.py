@@ -1,7 +1,13 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 
-from database import add_expense, view_expenses, delete_expense, search_expense
+from database import (
+    add_expense,
+    view_expenses,
+    delete_expense,
+    search_expense,
+    update_expense,
+)
 from validation import validate_date, validate_category, validate_amount
 
 
@@ -58,6 +64,74 @@ def handle_search_expense():
     expense_table.insert("", tk.END, values=expense)
 
 
+editing_expense_id = None
+
+
+def handle_edit_expense():
+    global editing_expense_id
+
+    selected_item = expense_table.selection()
+
+    if not selected_item:
+        messagebox.showerror("Error", "Please select an expense to edit")
+        return
+
+    expense_data = expense_table.item(selected_item[0], "values")
+
+    editing_expense_id = expense_data[0]
+
+    date_entry.delete(0, tk.END)
+    date_entry.insert(0, expense_data[1])
+
+    category_var.set(expense_data[2])
+
+    amount_entry.delete(0, tk.END)
+    amount_entry.insert(0, expense_data[3])
+
+    description_entry.delete(0, tk.END)
+    description_entry.insert(0, expense_data[4])
+
+
+def handle_update_expense():
+    global editing_expense_id
+
+    if editing_expense_id is None:
+        messagebox.showerror("Error", "Please select an expense to edit first")
+        return
+
+    expense_date = date_entry.get()
+    category = category_var.get()
+    amount = amount_entry.get()
+    description = description_entry.get()
+
+    if not (
+        validate_date(expense_date)
+        and validate_category(category)
+        and validate_amount(amount)
+    ):
+        messagebox.showerror("Error", "Invalid expense data")
+        return
+
+    update_expense(
+        editing_expense_id,
+        expense_date,
+        category,
+        float(amount),
+        description,
+    )
+
+    messagebox.showinfo("Success", "Expense updated successfully")
+    handle_view_expenses()
+
+    editing_expense_id = None
+
+    date_entry.delete(0, tk.END)
+    category_var.set("Food")
+    amount_entry.delete(0, tk.END)
+    description_entry.delete(0, tk.END)
+    date_entry.focus()
+
+
 def handle_delete_expense():
     selected_item = expense_table.selection()
 
@@ -82,7 +156,7 @@ def handle_delete_expense():
 root = tk.Tk()
 
 root.title("Expense Tracker")
-root.geometry("700x650")
+root.geometry("700x750")
 
 heading = tk.Label(root, text="Expense Tracker", font=("Arial", 20, "bold"))
 heading.pack(pady=20)
@@ -158,6 +232,12 @@ expense_table.column("Description", width=180)
 expense_table.pack(side="left")
 scrollbar.pack(side="right", fill="y")
 
+
+edit_button = tk.Button(root, text="Edit Selected", command=handle_edit_expense)
+edit_button.pack(pady=5)
+
+update_button = tk.Button(root, text="Update Expense", command=handle_update_expense)
+update_button.pack(pady=5)
 
 delete_button = tk.Button(root, text="Delete Selected", command=handle_delete_expense)
 delete_button.pack(pady=10)
