@@ -125,6 +125,18 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Automatically refreshed the expense table after updating
 - Reset the form and editing state after a successful update
 
+## Day 11 - Expense Filtering GUI
+
+- Added expense filtering by category
+- Added a separate category dropdown for filtering
+- Connected category filters with the SQLite database
+- Added expense filtering by date
+- Added date validation before filtering
+- Displayed filtered results directly in the Treeview
+- Added no-results handling for category filters
+- Added no-results handling for date filters
+- Kept View Expenses functionality to restore all expense records
+
 ## Technologies Used
 
 - Python

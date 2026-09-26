@@ -7,7 +7,10 @@ from database import (
     delete_expense,
     search_expense,
     update_expense,
+    filter_by_category,
+    filter_by_date,
 )
+
 from validation import validate_date, validate_category, validate_amount
 
 
@@ -65,6 +68,42 @@ def handle_search_expense():
 
 
 editing_expense_id = None
+
+
+def handle_filter_category():
+    category = filter_category_var.get()
+
+    expenses = filter_by_category(category)
+
+    if not expenses:
+        messagebox.showinfo("No Results", "No expenses found for this category")
+        return
+
+    for row in expense_table.get_children():
+        expense_table.delete(row)
+
+    for expense in expenses:
+        expense_table.insert("", tk.END, values=expense)
+
+
+def handle_filter_date():
+    expense_date = filter_date_entry.get()
+
+    if not validate_date(expense_date):
+        messagebox.showerror("Error", "Please enter a valid date")
+        return
+
+    expenses = filter_by_date(expense_date)
+
+    if not expenses:
+        messagebox.showinfo("No Results", "No expenses found for this date")
+        return
+
+    for row in expense_table.get_children():
+        expense_table.delete(row)
+
+    for expense in expenses:
+        expense_table.insert("", tk.END, values=expense)
 
 
 def handle_edit_expense():
@@ -206,6 +245,41 @@ search_entry.pack(pady=5)
 
 search_button = tk.Button(root, text="Search Expense", command=handle_search_expense)
 search_button.pack(pady=5)
+
+
+filter_category_label = tk.Label(root, text="Filter by Category:")
+filter_category_label.pack()
+
+filter_category_var = tk.StringVar()
+filter_category_var.set("Food")
+
+filter_category_dropdown = tk.OptionMenu(
+    root,
+    filter_category_var,
+    "Food",
+    "Travel",
+    "Shopping",
+    "Bills",
+    "Entertainment",
+    "Other",
+)
+filter_category_dropdown.pack(pady=5)
+
+filter_category_button = tk.Button(
+    root, text="Filter Category", command=handle_filter_category
+)
+filter_category_button.pack(pady=5)
+
+
+filter_date_label = tk.Label(root, text="Filter by Date (YYYY-MM-DD):")
+filter_date_label.pack()
+
+filter_date_entry = tk.Entry(root, width=15)
+filter_date_entry.pack(pady=5)
+
+filter_date_button = tk.Button(root, text="Filter Date", command=handle_filter_date)
+filter_date_button.pack(pady=5)
+
 
 columns = ("ID", "Date", "Category", "Amount", "Description")
 
