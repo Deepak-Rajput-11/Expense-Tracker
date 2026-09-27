@@ -137,6 +137,21 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Added no-results handling for date filters
 - Kept View Expenses functionality to restore all expense records
 
+## Day 12 - Reports & GUI Improvements
+
+- Integrated Pandas-based reports into the GUI
+- Added Total Spending report with formatted currency output
+- Added Category-wise Spending report
+- Added handling for empty report data
+- Reorganized the GUI using Tkinter Frames
+- Created separate sections for expense input and search/filter controls
+- Moved reporting controls into the organized right-side section
+- Positioned View Expenses above the expense table
+- Organized Edit, Update, and Delete buttons horizontally
+- Reduced the Treeview height for a more compact layout
+- Improved the application window layout to 700x700
+- Retested all existing CRUD, search, filter, and reporting features after refactoring
+
 ## Technologies Used
 
 - Python

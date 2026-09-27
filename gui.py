@@ -13,6 +13,8 @@ from database import (
 
 from validation import validate_date, validate_category, validate_amount
 
+from reports import total_spending, category_wise_spending
+
 
 def handle_add_expense():
     expense_date = date_entry.get()
@@ -106,6 +108,27 @@ def handle_filter_date():
         expense_table.insert("", tk.END, values=expense)
 
 
+def handle_total_spending():
+    total = total_spending()
+
+    messagebox.showinfo("Total Spending", f"Total Spending: ₹{total:.2f}")
+
+
+def handle_category_spending():
+    category_totals = category_wise_spending()
+
+    if category_totals.empty:
+        messagebox.showinfo("No Data", "No expenses available for the report")
+        return
+
+    report = ""
+
+    for category, amount in category_totals.items():
+        report += f"{category}: ₹{amount:.2f}\n"
+
+    messagebox.showinfo("Category-wise Spending", report)
+
+
 def handle_edit_expense():
     global editing_expense_id
 
@@ -195,66 +218,78 @@ def handle_delete_expense():
 root = tk.Tk()
 
 root.title("Expense Tracker")
-root.geometry("700x750")
+root.geometry("700x700")
 
 heading = tk.Label(root, text="Expense Tracker", font=("Arial", 20, "bold"))
 heading.pack(pady=20)
 
-date_label = tk.Label(root, text="Date (YYYY-MM-DD):")
+main_frame = tk.Frame(root)
+main_frame.pack(pady=10)
+
+left_frame = tk.Frame(main_frame)
+left_frame.pack(side="left", padx=20)
+
+right_frame = tk.Frame(main_frame)
+right_frame.pack(side="right", padx=20)
+
+date_label = tk.Label(left_frame, text="Date (YYYY-MM-DD):")
 date_label.pack()
 
-date_entry = tk.Entry(root, width=30)
+date_entry = tk.Entry(left_frame, width=30)
 date_entry.pack(pady=5)
 
-category_label = tk.Label(root, text="Category:")
+category_label = tk.Label(left_frame, text="Category:")
 category_label.pack()
 
 category_var = tk.StringVar()
 category_var.set("Food")
 
 category_dropdown = tk.OptionMenu(
-    root, category_var, "Food", "Travel", "Shopping", "Bills", "Entertainment", "Other"
+    left_frame,
+    category_var,
+    "Food",
+    "Travel",
+    "Shopping",
+    "Bills",
+    "Entertainment",
+    "Other",
 )
-
 category_dropdown.pack(pady=5)
 
-amount_label = tk.Label(root, text="Amount:")
+amount_label = tk.Label(left_frame, text="Amount:")
 amount_label.pack()
 
-amount_entry = tk.Entry(root, width=30)
+amount_entry = tk.Entry(left_frame, width=30)
 amount_entry.pack(pady=5)
 
-description_label = tk.Label(root, text="Description (Optional):")
+description_label = tk.Label(left_frame, text="Description (Optional):")
 description_label.pack()
 
-description_entry = tk.Entry(root, width=30)
+description_entry = tk.Entry(left_frame, width=30)
 description_entry.pack(pady=5)
 
-
-add_button = tk.Button(root, text="Add Expense", command=handle_add_expense)
+add_button = tk.Button(left_frame, text="Add Expense", command=handle_add_expense)
 add_button.pack(pady=15)
 
-view_button = tk.Button(root, text="View Expenses", command=handle_view_expenses)
-view_button.pack(pady=5)
 
-search_label = tk.Label(root, text="Search Expense by ID:")
+search_label = tk.Label(right_frame, text="Search Expense by ID:")
 search_label.pack()
 
-search_entry = tk.Entry(root, width=15)
+search_entry = tk.Entry(right_frame, width=15)
 search_entry.pack(pady=5)
 
-search_button = tk.Button(root, text="Search Expense", command=handle_search_expense)
+search_button = tk.Button(
+    right_frame, text="Search Expense", command=handle_search_expense
+)
 search_button.pack(pady=5)
-
-
-filter_category_label = tk.Label(root, text="Filter by Category:")
+filter_category_label = tk.Label(right_frame, text="Filter by Category:")
 filter_category_label.pack()
 
 filter_category_var = tk.StringVar()
 filter_category_var.set("Food")
 
 filter_category_dropdown = tk.OptionMenu(
-    root,
+    right_frame,
     filter_category_var,
     "Food",
     "Travel",
@@ -266,20 +301,44 @@ filter_category_dropdown = tk.OptionMenu(
 filter_category_dropdown.pack(pady=5)
 
 filter_category_button = tk.Button(
-    root, text="Filter Category", command=handle_filter_category
+    right_frame,
+    text="Filter Category",
+    command=handle_filter_category,
 )
 filter_category_button.pack(pady=5)
 
 
-filter_date_label = tk.Label(root, text="Filter by Date (YYYY-MM-DD):")
+filter_date_label = tk.Label(right_frame, text="Filter by Date (YYYY-MM-DD):")
 filter_date_label.pack()
 
-filter_date_entry = tk.Entry(root, width=15)
+filter_date_entry = tk.Entry(right_frame, width=15)
 filter_date_entry.pack(pady=5)
 
-filter_date_button = tk.Button(root, text="Filter Date", command=handle_filter_date)
+filter_date_button = tk.Button(
+    right_frame,
+    text="Filter Date",
+    command=handle_filter_date,
+)
 filter_date_button.pack(pady=5)
 
+
+total_button = tk.Button(
+    right_frame,
+    text="Show Total Spending",
+    command=handle_total_spending,
+)
+total_button.pack(pady=5)
+
+category_spending_button = tk.Button(
+    right_frame,
+    text="Show Category Spending",
+    command=handle_category_spending,
+)
+category_spending_button.pack(pady=5)
+
+
+view_button = tk.Button(root, text="View Expenses", command=handle_view_expenses)
+view_button.pack(pady=5)
 
 columns = ("ID", "Date", "Category", "Amount", "Description")
 
@@ -287,7 +346,7 @@ table_frame = tk.Frame(root)
 table_frame.pack(pady=10)
 
 expense_table = ttk.Treeview(
-    table_frame, columns=columns, show="headings", height=8, selectmode="browse"
+    table_frame, columns=columns, show="headings", height=6, selectmode="browse"
 )
 
 scrollbar = ttk.Scrollbar(table_frame, orient="vertical", command=expense_table.yview)
@@ -307,13 +366,28 @@ expense_table.pack(side="left")
 scrollbar.pack(side="right", fill="y")
 
 
-edit_button = tk.Button(root, text="Edit Selected", command=handle_edit_expense)
-edit_button.pack(pady=5)
+action_frame = tk.Frame(root)
+action_frame.pack(pady=10)
 
-update_button = tk.Button(root, text="Update Expense", command=handle_update_expense)
-update_button.pack(pady=5)
+edit_button = tk.Button(
+    action_frame,
+    text="Edit Selected",
+    command=handle_edit_expense,
+)
+edit_button.pack(side="left", padx=5)
 
-delete_button = tk.Button(root, text="Delete Selected", command=handle_delete_expense)
-delete_button.pack(pady=10)
+update_button = tk.Button(
+    action_frame,
+    text="Update Expense",
+    command=handle_update_expense,
+)
+update_button.pack(side="left", padx=5)
+
+delete_button = tk.Button(
+    action_frame,
+    text="Delete Selected",
+    command=handle_delete_expense,
+)
+delete_button.pack(side="left", padx=5)
 
 root.mainloop()
