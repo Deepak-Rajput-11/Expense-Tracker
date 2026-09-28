@@ -30,6 +30,8 @@ def handle_add_expense():
         add_expense(expense_date, category, float(amount), description)
         messagebox.showinfo("Success", "Expense added successfully")
 
+        handle_view_expenses()
+
         date_entry.delete(0, tk.END)
         amount_entry.delete(0, tk.END)
         description_entry.delete(0, tk.END)
@@ -78,6 +80,9 @@ def handle_filter_category():
     expenses = filter_by_category(category)
 
     if not expenses:
+        for row in expense_table.get_children():
+            expense_table.delete(row)
+
         messagebox.showinfo("No Results", "No expenses found for this category")
         return
 
@@ -98,6 +103,9 @@ def handle_filter_date():
     expenses = filter_by_date(expense_date)
 
     if not expenses:
+        for row in expense_table.get_children():
+            expense_table.delete(row)
+
         messagebox.showinfo("No Results", "No expenses found for this date")
         return
 
@@ -221,16 +229,32 @@ root.title("Expense Tracker")
 root.geometry("700x700")
 
 heading = tk.Label(root, text="Expense Tracker", font=("Arial", 20, "bold"))
-heading.pack(pady=20)
+heading.pack(pady=10)
 
 main_frame = tk.Frame(root)
-main_frame.pack(pady=10)
+main_frame.pack(pady=5)
 
 left_frame = tk.Frame(main_frame)
 left_frame.pack(side="left", padx=20)
 
 right_frame = tk.Frame(main_frame)
 right_frame.pack(side="right", padx=20)
+
+
+form_heading = tk.Label(
+    left_frame,
+    text="Expense Details",
+    font=("Arial", 12, "bold"),
+)
+form_heading.pack(pady=(0, 10))
+
+tools_heading = tk.Label(
+    right_frame,
+    text="Search & Reports",
+    font=("Arial", 12, "bold"),
+)
+tools_heading.pack(pady=(0, 10))
+
 
 date_label = tk.Label(left_frame, text="Date (YYYY-MM-DD):")
 date_label.pack()
@@ -336,20 +360,34 @@ category_spending_button = tk.Button(
 )
 category_spending_button.pack(pady=5)
 
-
-view_button = tk.Button(root, text="View Expenses", command=handle_view_expenses)
-view_button.pack(pady=5)
-
 columns = ("ID", "Date", "Category", "Amount", "Description")
 
 table_frame = tk.Frame(root)
-table_frame.pack(pady=10)
+table_frame.pack(pady=5)
+
+view_button = tk.Button(
+    table_frame,
+    text="View Expenses",
+    command=handle_view_expenses,
+)
+view_button.pack(pady=(0, 5))
+
+tree_frame = tk.Frame(table_frame)
+tree_frame.pack()
 
 expense_table = ttk.Treeview(
-    table_frame, columns=columns, show="headings", height=6, selectmode="browse"
+    tree_frame,
+    columns=columns,
+    show="headings",
+    height=6,
+    selectmode="browse",
 )
 
-scrollbar = ttk.Scrollbar(table_frame, orient="vertical", command=expense_table.yview)
+scrollbar = ttk.Scrollbar(
+    tree_frame,
+    orient="vertical",
+    command=expense_table.yview,
+)
 
 expense_table.configure(yscrollcommand=scrollbar.set)
 
@@ -367,7 +405,7 @@ scrollbar.pack(side="right", fill="y")
 
 
 action_frame = tk.Frame(root)
-action_frame.pack(pady=10)
+action_frame.pack(pady=5)
 
 edit_button = tk.Button(
     action_frame,
@@ -389,5 +427,7 @@ delete_button = tk.Button(
     command=handle_delete_expense,
 )
 delete_button.pack(side="left", padx=5)
+
+handle_view_expenses()
 
 root.mainloop()

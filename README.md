@@ -152,6 +152,18 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Improved the application window layout to 700x700
 - Retested all existing CRUD, search, filter, and reporting features after refactoring
 
+## Day 13 - GUI Layout & User Experience Improvements
+
+- Added section headings for Expense Details and Search & Reports
+- Improved GUI spacing to keep all controls visible within the window
+- Reorganized the expense table using nested Tkinter Frames
+- Grouped the View Expenses button with the expense table section
+- Automatically refreshed the expense table after adding a new expense
+- Automatically loaded existing expenses when the application starts
+- Cleared previous table data when category filtering returns no results
+- Cleared previous table data when date filtering returns no results
+- Retested the updated GUI and confirmed all improvements are working correctly
+
 ## Technologies Used
 
 - Python
