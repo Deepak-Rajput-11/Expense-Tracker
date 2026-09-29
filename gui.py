@@ -13,7 +13,13 @@ from database import (
 
 from validation import validate_date, validate_category, validate_amount
 
-from reports import total_spending, category_wise_spending
+from reports import (
+    total_spending,
+    category_wise_spending,
+    expense_count,
+    average_expense,
+    highest_spending_category,
+)
 
 
 def handle_add_expense():
@@ -31,6 +37,7 @@ def handle_add_expense():
         messagebox.showinfo("Success", "Expense added successfully")
 
         handle_view_expenses()
+        refresh_total_spending()
 
         date_entry.delete(0, tk.END)
         amount_entry.delete(0, tk.END)
@@ -116,10 +123,25 @@ def handle_filter_date():
         expense_table.insert("", tk.END, values=expense)
 
 
-def handle_total_spending():
+def refresh_total_spending():
     total = total_spending()
+    total_spending_var.set(f"Overall Spending: ₹{total:.2f}")
+    return total
 
-    messagebox.showinfo("Total Spending", f"Total Spending: ₹{total:.2f}")
+
+def handle_total_spending():
+    total = refresh_total_spending()
+    count = expense_count()
+    average = average_expense()
+    highest_category = highest_spending_category()
+
+    messagebox.showinfo(
+        "Spending Summary",
+        f"Total Spending: ₹{total:.2f}\n"
+        f"Number of Expenses: {count}\n"
+        f"Average Expense: ₹{average:.2f}\n"
+        f"Highest Spending Category: {highest_category}",
+    )
 
 
 def handle_category_spending():
@@ -192,6 +214,7 @@ def handle_update_expense():
 
     messagebox.showinfo("Success", "Expense updated successfully")
     handle_view_expenses()
+    refresh_total_spending()
 
     editing_expense_id = None
 
@@ -218,6 +241,7 @@ def handle_delete_expense():
             delete_expense(expense_id)
             messagebox.showinfo("Success", "Expense deleted successfully")
             handle_view_expenses()
+            refresh_total_spending()
 
     else:
         messagebox.showerror("Error", "Please select an expense to delete")
@@ -227,6 +251,9 @@ root = tk.Tk()
 
 root.title("Expense Tracker")
 root.geometry("700x700")
+
+total_spending_var = tk.StringVar()
+total_spending_var.set("Total Spending: ₹0.00")
 
 heading = tk.Label(root, text="Expense Tracker", font=("Arial", 20, "bold"))
 heading.pack(pady=10)
@@ -255,6 +282,13 @@ tools_heading = tk.Label(
 )
 tools_heading.pack(pady=(0, 10))
 
+total_spending_label = tk.Label(
+    right_frame,
+    textvariable=total_spending_var,
+    font=("Arial", 11, "bold"),
+)
+
+total_spending_label.pack(pady=(0, 10))
 
 date_label = tk.Label(left_frame, text="Date (YYYY-MM-DD):")
 date_label.pack()
@@ -348,7 +382,7 @@ filter_date_button.pack(pady=5)
 
 total_button = tk.Button(
     right_frame,
-    text="Show Total Spending",
+    text="Spending Summary",
     command=handle_total_spending,
 )
 total_button.pack(pady=5)
@@ -429,5 +463,6 @@ delete_button = tk.Button(
 delete_button.pack(side="left", padx=5)
 
 handle_view_expenses()
+refresh_total_spending()
 
 root.mainloop()
