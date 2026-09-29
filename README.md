@@ -164,6 +164,22 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Cleared previous table data when date filtering returns no results
 - Retested the updated GUI and confirmed all improvements are working correctly
 
+## Day 14 - Live Spending Overview & Summary Reports
+
+- Added a live Overall Spending display to the GUI
+- Used Tkinter StringVar to dynamically update spending information
+- Automatically loaded overall spending when the application starts
+- Automatically refreshed overall spending after adding, updating, and deleting expenses
+- Replaced the Show Total Spending action with a more useful Spending Summary
+- Added total number of expenses to the spending summary
+- Added average expense calculation using Pandas
+- Added highest spending category calculation using Pandas
+- Used `df.shape[0]` to calculate the number of expense records
+- Used `mean()` to calculate the average expense
+- Used `idxmax()` to identify the highest spending category
+- Added empty-data handling for report calculations
+- Retested CRUD, filtering, live totals, and spending summary functionality successfully
+
 ## Technologies Used
 
 - Python
