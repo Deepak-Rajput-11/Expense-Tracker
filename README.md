@@ -180,6 +180,22 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Added empty-data handling for report calculations
 - Retested CRUD, filtering, live totals, and spending summary functionality successfully
 
+## Day 15 - Dashboard Layout & UI Improvements
+
+- Expanded the application window for a more spacious dashboard layout
+- Added a header section with the Expense Tracker title and subtitle
+- Moved the live Overall Spending display into the header
+- Reorganized the Expense Details form using Tkinter Grid layout
+- Aligned form labels and input fields in a cleaner two-column structure
+- Balanced the Expense Details and Search & Reports panels
+- Expanded the Expense Records table to use the available window width
+- Added a dedicated Expense Records heading
+- Increased the table height to display more expense records
+- Improved the layout of Edit, Update, and Delete actions
+- Replaced the old View Expenses button with a cleaner Show All button
+- Added Show All functionality to restore all records after searching or filtering
+- Retested Add, Search, Filter, Edit, Update, Delete, Spending Summary, and Show All functionality successfully
+
 ## Technologies Used
 
 - Python
