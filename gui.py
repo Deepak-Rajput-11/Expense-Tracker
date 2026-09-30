@@ -250,23 +250,60 @@ def handle_delete_expense():
 root = tk.Tk()
 
 root.title("Expense Tracker")
-root.geometry("700x700")
+root.geometry("1100x700")
+root.minsize(1000, 650)
 
 total_spending_var = tk.StringVar()
 total_spending_var.set("Total Spending: ₹0.00")
 
-heading = tk.Label(root, text="Expense Tracker", font=("Arial", 20, "bold"))
-heading.pack(pady=10)
+header_frame = tk.Frame(root)
+header_frame.pack(fill="x", padx=30, pady=(20, 10))
+
+title_frame = tk.Frame(header_frame)
+title_frame.pack(side="left")
+
+heading = tk.Label(
+    title_frame,
+    text="Expense Tracker",
+    font=("Arial", 24, "bold"),
+)
+heading.pack(anchor="w")
+
+subtitle = tk.Label(
+    title_frame,
+    text="Track Smarter. Spend Better.",
+    font=("Arial", 11),
+)
+subtitle.pack(anchor="w")
+
+total_spending_label = tk.Label(
+    header_frame,
+    textvariable=total_spending_var,
+    font=("Arial", 18, "bold"),
+)
+
+total_spending_label.pack(side="right", padx=20)
 
 main_frame = tk.Frame(root)
-main_frame.pack(pady=5)
+main_frame.pack(fill="x", padx=30, pady=10)
 
-left_frame = tk.Frame(main_frame)
-left_frame.pack(side="left", padx=20)
+left_frame = tk.Frame(
+    main_frame,
+    bd=1,
+    relief="solid",
+)
 
-right_frame = tk.Frame(main_frame)
-right_frame.pack(side="right", padx=20)
+right_frame = tk.Frame(
+    main_frame,
+    bd=1,
+    relief="solid",
+)
 
+left_frame.grid(row=0, column=0, sticky="nsew", padx=(0, 10))
+right_frame.grid(row=0, column=1, sticky="nsew", padx=(10, 0))
+
+main_frame.columnconfigure(0, weight=1)
+main_frame.columnconfigure(1, weight=1)
 
 form_heading = tk.Label(
     left_frame,
@@ -274,6 +311,8 @@ form_heading = tk.Label(
     font=("Arial", 12, "bold"),
 )
 form_heading.pack(pady=(0, 10))
+form_frame = tk.Frame(left_frame)
+form_frame.pack(padx=30, pady=10)
 
 tools_heading = tk.Label(
     right_frame,
@@ -282,28 +321,20 @@ tools_heading = tk.Label(
 )
 tools_heading.pack(pady=(0, 10))
 
-total_spending_label = tk.Label(
-    right_frame,
-    textvariable=total_spending_var,
-    font=("Arial", 11, "bold"),
-)
+date_label = tk.Label(form_frame, text="Date (YYYY-MM-DD):")
+date_label.grid(row=0, column=0, padx=10, pady=8, sticky="w")
 
-total_spending_label.pack(pady=(0, 10))
+date_entry = tk.Entry(form_frame, width=30)
+date_entry.grid(row=0, column=1, padx=10, pady=8)
 
-date_label = tk.Label(left_frame, text="Date (YYYY-MM-DD):")
-date_label.pack()
-
-date_entry = tk.Entry(left_frame, width=30)
-date_entry.pack(pady=5)
-
-category_label = tk.Label(left_frame, text="Category:")
-category_label.pack()
+category_label = tk.Label(form_frame, text="Category:")
+category_label.grid(row=1, column=0, padx=10, pady=8, sticky="w")
 
 category_var = tk.StringVar()
 category_var.set("Food")
 
 category_dropdown = tk.OptionMenu(
-    left_frame,
+    form_frame,
     category_var,
     "Food",
     "Travel",
@@ -312,22 +343,38 @@ category_dropdown = tk.OptionMenu(
     "Entertainment",
     "Other",
 )
-category_dropdown.pack(pady=5)
+category_dropdown.grid(
+    row=1,
+    column=1,
+    padx=10,
+    pady=8,
+    sticky="ew",
+)
 
-amount_label = tk.Label(left_frame, text="Amount:")
-amount_label.pack()
+amount_label = tk.Label(form_frame, text="Amount:")
+amount_label.grid(row=2, column=0, padx=10, pady=8, sticky="w")
 
-amount_entry = tk.Entry(left_frame, width=30)
-amount_entry.pack(pady=5)
+amount_entry = tk.Entry(form_frame, width=30)
+amount_entry.grid(row=2, column=1, padx=10, pady=8, sticky="ew")
 
-description_label = tk.Label(left_frame, text="Description (Optional):")
-description_label.pack()
+description_label = tk.Label(form_frame, text="Description (Optional):")
+description_label.grid(row=3, column=0, padx=10, pady=8, sticky="w")
 
-description_entry = tk.Entry(left_frame, width=30)
-description_entry.pack(pady=5)
+description_entry = tk.Entry(form_frame, width=30)
+description_entry.grid(row=3, column=1, padx=10, pady=8, sticky="ew")
 
-add_button = tk.Button(left_frame, text="Add Expense", command=handle_add_expense)
-add_button.pack(pady=15)
+add_button = tk.Button(
+    form_frame,
+    text="Add Expense",
+    command=handle_add_expense,
+)
+
+add_button.grid(
+    row=4,
+    column=0,
+    columnspan=2,
+    pady=(15, 10),
+)
 
 
 search_label = tk.Label(right_frame, text="Search Expense by ID:")
@@ -397,23 +444,41 @@ category_spending_button.pack(pady=5)
 columns = ("ID", "Date", "Category", "Amount", "Description")
 
 table_frame = tk.Frame(root)
-table_frame.pack(pady=5)
+table_frame.pack(fill="x", padx=30, pady=10)
 
-view_button = tk.Button(
-    table_frame,
-    text="View Expenses",
+# view_button = tk.Button(
+#     table_frame,
+#     text="View Expenses",
+#     command=handle_view_expenses,
+# )
+# view_button.pack(pady=(0, 5))
+
+
+records_header = tk.Frame(table_frame)
+records_header.pack(fill="x", pady=(0, 8))
+
+records_heading = tk.Label(
+    records_header,
+    text="Expense Records",
+    font=("Arial", 14, "bold"),
+)
+records_heading.pack(side="left")
+
+show_all_button = tk.Button(
+    records_header,
+    text="Show All",
     command=handle_view_expenses,
 )
-view_button.pack(pady=(0, 5))
+show_all_button.pack(side="right")
 
 tree_frame = tk.Frame(table_frame)
-tree_frame.pack()
+tree_frame.pack(fill="x")
 
 expense_table = ttk.Treeview(
     tree_frame,
     columns=columns,
     show="headings",
-    height=6,
+    height=8,
     selectmode="browse",
 )
 
@@ -434,33 +499,33 @@ expense_table.column("Category", width=100)
 expense_table.column("Amount", width=80)
 expense_table.column("Description", width=180)
 
-expense_table.pack(side="left")
+expense_table.pack(side="left", fill="x", expand=True)
 scrollbar.pack(side="right", fill="y")
 
 
 action_frame = tk.Frame(root)
-action_frame.pack(pady=5)
+action_frame.pack(fill="x", padx=30, pady=(5, 10))
 
 edit_button = tk.Button(
     action_frame,
     text="Edit Selected",
     command=handle_edit_expense,
 )
-edit_button.pack(side="left", padx=5)
+edit_button.pack(side="left", padx=(0, 10))
 
 update_button = tk.Button(
     action_frame,
     text="Update Expense",
     command=handle_update_expense,
 )
-update_button.pack(side="left", padx=5)
+update_button.pack(side="left", padx=10)
 
 delete_button = tk.Button(
     action_frame,
     text="Delete Selected",
     command=handle_delete_expense,
 )
-delete_button.pack(side="left", padx=5)
+delete_button.pack(side="left", padx=10)
 
 handle_view_expenses()
 refresh_total_spending()
