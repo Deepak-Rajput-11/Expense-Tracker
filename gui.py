@@ -84,6 +84,10 @@ editing_expense_id = None
 def handle_filter_category():
     category = filter_category_var.get()
 
+    if category == "All Categories":
+        handle_view_expenses()
+        return
+
     expenses = filter_by_category(category)
 
     if not expenses:
@@ -252,20 +256,22 @@ root = tk.Tk()
 root.title("Expense Tracker")
 root.geometry("1100x700")
 root.minsize(1000, 650)
+root.configure(bg="#f4f6f8")
 
 total_spending_var = tk.StringVar()
 total_spending_var.set("Total Spending: ₹0.00")
 
-header_frame = tk.Frame(root)
+header_frame = tk.Frame(root, bg="#f4f6f8")
 header_frame.pack(fill="x", padx=30, pady=(20, 10))
 
-title_frame = tk.Frame(header_frame)
+title_frame = tk.Frame(header_frame, bg="#f4f6f8")
 title_frame.pack(side="left")
 
 heading = tk.Label(
     title_frame,
     text="Expense Tracker",
     font=("Arial", 24, "bold"),
+    bg="#f4f6f8",
 )
 heading.pack(anchor="w")
 
@@ -273,6 +279,7 @@ subtitle = tk.Label(
     title_frame,
     text="Track Smarter. Spend Better.",
     font=("Arial", 11),
+    bg="#f4f6f8",
 )
 subtitle.pack(anchor="w")
 
@@ -280,6 +287,7 @@ total_spending_label = tk.Label(
     header_frame,
     textvariable=total_spending_var,
     font=("Arial", 18, "bold"),
+    bg="#f4f6f8",
 )
 
 total_spending_label.pack(side="right", padx=20)
@@ -289,53 +297,107 @@ main_frame.pack(fill="x", padx=30, pady=10)
 
 left_frame = tk.Frame(
     main_frame,
+    bg="white",
     bd=1,
     relief="solid",
 )
 
 right_frame = tk.Frame(
     main_frame,
+    bg="white",
     bd=1,
     relief="solid",
 )
 
-left_frame.grid(row=0, column=0, sticky="nsew", padx=(0, 10))
-right_frame.grid(row=0, column=1, sticky="nsew", padx=(10, 0))
 
+left_frame.grid(row=0, column=0, sticky="nsew", padx=(0, 10))
+right_frame.grid(
+    row=0,
+    column=1,
+    sticky="nsew",
+    padx=10,
+)
 main_frame.columnconfigure(0, weight=1)
 main_frame.columnconfigure(1, weight=1)
+main_frame.columnconfigure(2, weight=1)
 
 form_heading = tk.Label(
     left_frame,
     text="Expense Details",
-    font=("Arial", 12, "bold"),
+    font=("Arial", 14, "bold"),
+    bg="white",
 )
-form_heading.pack(pady=(0, 10))
-form_frame = tk.Frame(left_frame)
+form_heading.pack(pady=(15, 10))
+form_frame = tk.Frame(left_frame, bg="white")
 form_frame.pack(padx=30, pady=10)
 
 tools_heading = tk.Label(
     right_frame,
-    text="Search & Reports",
-    font=("Arial", 12, "bold"),
+    text="Search & Filter",
+    font=("Arial", 14, "bold"),
+    bg="white",
 )
-tools_heading.pack(pady=(0, 10))
+tools_heading.pack(pady=(15, 10))
 
-date_label = tk.Label(form_frame, text="Date (YYYY-MM-DD):")
+search_frame = tk.Frame(
+    right_frame,
+    bg="white",
+)
+
+search_frame.pack(
+    fill="both",
+    expand=True,
+    padx=20,
+    pady=(0, 15),
+)
+
+reports_frame = tk.Frame(
+    main_frame,
+    bg="white",
+    bd=1,
+    relief="solid",
+)
+
+reports_frame.grid(
+    row=0,
+    column=2,
+    sticky="nsew",
+    padx=(10, 0),
+)
+
+reports_heading = tk.Label(
+    reports_frame,
+    text="Reports",
+    font=("Arial", 14, "bold"),
+    bg="white",
+)
+
+reports_heading.pack(pady=(0, 10))
+
+date_label = tk.Label(
+    form_frame,
+    text="Date (YYYY-MM-DD):",
+    bg="white",
+)
 date_label.grid(row=0, column=0, padx=10, pady=8, sticky="w")
 
 date_entry = tk.Entry(form_frame, width=30)
 date_entry.grid(row=0, column=1, padx=10, pady=8)
 
-category_label = tk.Label(form_frame, text="Category:")
+category_label = tk.Label(
+    form_frame,
+    text="Category:",
+    bg="white",
+)
 category_label.grid(row=1, column=0, padx=10, pady=8, sticky="w")
 
 category_var = tk.StringVar()
 category_var.set("Food")
 
-category_dropdown = tk.OptionMenu(
-    form_frame,
+filter_category_dropdown = tk.OptionMenu(
+    search_frame,
     category_var,
+    "All Categories",
     "Food",
     "Travel",
     "Shopping",
@@ -343,21 +405,30 @@ category_dropdown = tk.OptionMenu(
     "Entertainment",
     "Other",
 )
-category_dropdown.grid(
-    row=1,
+
+filter_category_dropdown.grid(
+    row=2,
     column=1,
     padx=10,
     pady=8,
     sticky="ew",
 )
 
-amount_label = tk.Label(form_frame, text="Amount:")
+amount_label = tk.Label(
+    form_frame,
+    text="Amount:",
+    bg="white",
+)
 amount_label.grid(row=2, column=0, padx=10, pady=8, sticky="w")
 
 amount_entry = tk.Entry(form_frame, width=30)
 amount_entry.grid(row=2, column=1, padx=10, pady=8, sticky="ew")
 
-description_label = tk.Label(form_frame, text="Description (Optional):")
+description_label = tk.Label(
+    form_frame,
+    text="Description (Optional):",
+    bg="white",
+)
 description_label.grid(row=3, column=0, padx=10, pady=8, sticky="w")
 
 description_entry = tk.Entry(form_frame, width=30)
@@ -367,6 +438,13 @@ add_button = tk.Button(
     form_frame,
     text="Add Expense",
     command=handle_add_expense,
+    bg="#2563eb",
+    fg="white",
+    font=("Arial", 10, "bold"),
+    relief="flat",
+    cursor="hand2",
+    padx=15,
+    pady=6,
 )
 
 add_button.grid(
@@ -377,24 +455,63 @@ add_button.grid(
 )
 
 
-search_label = tk.Label(right_frame, text="Search Expense by ID:")
-search_label.pack()
+search_label = tk.Label(
+    search_frame,
+    text="Search Expense by ID:",
+    bg="white",
+)
+search_label.grid(
+    row=0,
+    column=0,
+    padx=10,
+    pady=8,
+    sticky="w",
+)
 
-search_entry = tk.Entry(right_frame, width=15)
-search_entry.pack(pady=5)
+search_entry = tk.Entry(search_frame, width=15)
+search_entry.grid(
+    row=0,
+    column=1,
+    padx=10,
+    pady=8,
+)
 
 search_button = tk.Button(
-    right_frame, text="Search Expense", command=handle_search_expense
+    search_frame,
+    text="Search Expense",
+    command=handle_search_expense,
+    bg="#e5e7eb",
+    font=("Arial", 9, "bold"),
+    relief="flat",
+    cursor="hand2",
+    padx=10,
+    pady=4,
 )
-search_button.pack(pady=5)
-filter_category_label = tk.Label(right_frame, text="Filter by Category:")
-filter_category_label.pack()
+search_button.grid(
+    row=1,
+    column=0,
+    columnspan=2,
+    pady=(5, 10),
+)
+
+filter_category_label = tk.Label(
+    search_frame,
+    text="Filter by Category:",
+    bg="white",
+)
+filter_category_label.grid(
+    row=2,
+    column=0,
+    padx=10,
+    pady=8,
+    sticky="w",
+)
 
 filter_category_var = tk.StringVar()
-filter_category_var.set("Food")
+filter_category_var.set("All Categories")
 
 filter_category_dropdown = tk.OptionMenu(
-    right_frame,
+    search_frame,
     filter_category_var,
     "Food",
     "Travel",
@@ -403,41 +520,95 @@ filter_category_dropdown = tk.OptionMenu(
     "Entertainment",
     "Other",
 )
-filter_category_dropdown.pack(pady=5)
+filter_category_dropdown.grid(
+    row=2,
+    column=1,
+    padx=10,
+    pady=8,
+    sticky="ew",
+)
 
 filter_category_button = tk.Button(
-    right_frame,
+    search_frame,
     text="Filter Category",
     command=handle_filter_category,
+    bg="#e5e7eb",
+    font=("Arial", 9, "bold"),
+    relief="flat",
+    cursor="hand2",
+    padx=10,
+    pady=4,
 )
-filter_category_button.pack(pady=5)
+filter_category_button.grid(
+    row=3,
+    column=0,
+    columnspan=2,
+    pady=(5, 10),
+)
 
+filter_date_label = tk.Label(
+    search_frame,
+    text="Date:",
+    bg="white",
+)
+filter_date_label.grid(
+    row=4,
+    column=0,
+    padx=10,
+    pady=8,
+    sticky="w",
+)
 
-filter_date_label = tk.Label(right_frame, text="Filter by Date (YYYY-MM-DD):")
-filter_date_label.pack()
-
-filter_date_entry = tk.Entry(right_frame, width=15)
-filter_date_entry.pack(pady=5)
+filter_date_entry = tk.Entry(search_frame, width=15)
+filter_date_entry.grid(
+    row=4,
+    column=1,
+    padx=10,
+    pady=8,
+)
 
 filter_date_button = tk.Button(
-    right_frame,
+    search_frame,
     text="Filter Date",
     command=handle_filter_date,
+    bg="#e5e7eb",
+    font=("Arial", 9, "bold"),
+    relief="flat",
+    cursor="hand2",
+    padx=10,
+    pady=4,
 )
-filter_date_button.pack(pady=5)
-
+filter_date_button.grid(
+    row=5,
+    column=0,
+    columnspan=2,
+    pady=(5, 10),
+)
 
 total_button = tk.Button(
-    right_frame,
+    reports_frame,
     text="Spending Summary",
     command=handle_total_spending,
+    bg="#2563eb",
+    fg="white",
+    font=("Arial", 9, "bold"),
+    relief="flat",
+    cursor="hand2",
+    padx=10,
+    pady=4,
 )
 total_button.pack(pady=5)
 
 category_spending_button = tk.Button(
-    right_frame,
+    reports_frame,
     text="Show Category Spending",
     command=handle_category_spending,
+    bg="#e5e7eb",
+    font=("Arial", 9, "bold"),
+    relief="flat",
+    cursor="hand2",
+    padx=10,
+    pady=4,
 )
 category_spending_button.pack(pady=5)
 
@@ -468,6 +639,12 @@ show_all_button = tk.Button(
     records_header,
     text="Show All",
     command=handle_view_expenses,
+    bg="#e5e7eb",
+    font=("Arial", 9, "bold"),
+    relief="flat",
+    cursor="hand2",
+    padx=12,
+    pady=4,
 )
 show_all_button.pack(side="right")
 
@@ -478,7 +655,7 @@ expense_table = ttk.Treeview(
     tree_frame,
     columns=columns,
     show="headings",
-    height=8,
+    height=6,
     selectmode="browse",
 )
 
@@ -510,6 +687,12 @@ edit_button = tk.Button(
     action_frame,
     text="Edit Selected",
     command=handle_edit_expense,
+    bg="#e5e7eb",
+    font=("Arial", 9, "bold"),
+    relief="flat",
+    cursor="hand2",
+    padx=12,
+    pady=5,
 )
 edit_button.pack(side="left", padx=(0, 10))
 
@@ -517,6 +700,13 @@ update_button = tk.Button(
     action_frame,
     text="Update Expense",
     command=handle_update_expense,
+    bg="#2563eb",
+    fg="white",
+    font=("Arial", 9, "bold"),
+    relief="flat",
+    cursor="hand2",
+    padx=12,
+    pady=5,
 )
 update_button.pack(side="left", padx=10)
 
@@ -524,6 +714,13 @@ delete_button = tk.Button(
     action_frame,
     text="Delete Selected",
     command=handle_delete_expense,
+    bg="#dc2626",
+    fg="white",
+    font=("Arial", 9, "bold"),
+    relief="flat",
+    cursor="hand2",
+    padx=12,
+    pady=5,
 )
 delete_button.pack(side="left", padx=10)
 

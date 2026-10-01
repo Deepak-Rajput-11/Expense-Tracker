@@ -196,6 +196,18 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Added Show All functionality to restore all records after searching or filtering
 - Retested Add, Search, Filter, Edit, Update, Delete, Spending Summary, and Show All functionality successfully
 
+## Day 16 - Dashboard Styling & Search/Report Layout
+
+- Added a light dashboard background and white card-style sections
+- Improved section headings, spacing, and overall visual consistency
+- Styled buttons based on their actions using primary, secondary, and destructive styles
+- Reorganized the dashboard into three main sections: Expense Details, Search & Filter, and Reports
+- Changed Search & Filter inputs to a cleaner side-by-side label and input layout
+- Added an "All Categories" option to restore all expenses from the category filter
+- Separated reporting features into their own Reports section
+- Improved the overall dashboard structure while keeping all existing functionality intact
+- Retested Search, Category Filter, Date Filter, Spending Summary, and Category Spending successfully
+
 ## Technologies Used
 
 - Python
