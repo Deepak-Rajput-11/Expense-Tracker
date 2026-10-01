@@ -510,9 +510,9 @@ filter_category_label.grid(
 filter_category_var = tk.StringVar()
 filter_category_var.set("All Categories")
 
-filter_category_dropdown = tk.OptionMenu(
-    search_frame,
-    filter_category_var,
+category_dropdown = tk.OptionMenu(
+    form_frame,
+    category_var,
     "Food",
     "Travel",
     "Shopping",
@@ -520,8 +520,10 @@ filter_category_dropdown = tk.OptionMenu(
     "Entertainment",
     "Other",
 )
-filter_category_dropdown.grid(
-    row=2,
+
+
+category_dropdown.grid(
+    row=1,
     column=1,
     padx=10,
     pady=8,
