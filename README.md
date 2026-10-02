@@ -208,6 +208,16 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Improved the overall dashboard structure while keeping all existing functionality intact
 - Retested Search, Category Filter, Date Filter, Spending Summary, and Category Spending successfully
 
+## Day 17 - Calendar Picker & Category Spending Chart
+
+- Added calendar date pickers using TkCalendar for expense entry and date filtering
+- Improved the lower dashboard layout with Expense Records and Category Spending side-by-side
+- Embedded a Matplotlib pie chart directly inside the Tkinter dashboard
+- Used Pandas category-wise spending data to generate the chart
+- Added category percentages to the chart legend
+- Added automatic chart refresh after adding, updating, or deleting expenses
+- Retested Add, Edit, Update, Delete, and Date Filter after the UI changes
+
 ## Technologies Used
 
 - Python

@@ -1,5 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
+from tkcalendar import DateEntry
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from database import (
     add_expense,
@@ -38,6 +41,7 @@ def handle_add_expense():
 
         handle_view_expenses()
         refresh_total_spending()
+        refresh_category_chart()
 
         date_entry.delete(0, tk.END)
         amount_entry.delete(0, tk.END)
@@ -133,6 +137,54 @@ def refresh_total_spending():
     return total
 
 
+def refresh_category_chart():
+    category_totals = category_wise_spending()
+
+    category_axis.clear()
+
+    if category_totals.empty:
+        category_axis.text(
+            0.5,
+            0.5,
+            "No expense data",
+            ha="center",
+            va="center",
+        )
+        category_axis.set_axis_off()
+
+    else:
+        category_axis.set_axis_on()
+
+        categories = category_totals.index
+        amounts = category_totals.values
+
+        total = amounts.sum()
+
+        legend_labels = [
+            f"{category}  {amount / total * 100:.1f}%"
+            for category, amount in zip(categories, amounts)
+        ]
+
+        wedges, texts = category_axis.pie(
+            amounts,
+            startangle=90,
+        )
+
+        category_axis.legend(
+            wedges,
+            legend_labels,
+            loc="upper center",
+            bbox_to_anchor=(0.5, -0.05),
+            ncol=3,
+            frameon=False,
+        )
+
+        category_axis.axis("equal")
+
+    category_figure.tight_layout()
+    category_canvas.draw()
+
+
 def handle_total_spending():
     total = refresh_total_spending()
     count = expense_count()
@@ -219,7 +271,7 @@ def handle_update_expense():
     messagebox.showinfo("Success", "Expense updated successfully")
     handle_view_expenses()
     refresh_total_spending()
-
+    refresh_category_chart()
     editing_expense_id = None
 
     date_entry.delete(0, tk.END)
@@ -246,6 +298,7 @@ def handle_delete_expense():
             messagebox.showinfo("Success", "Expense deleted successfully")
             handle_view_expenses()
             refresh_total_spending()
+            refresh_category_chart()
 
     else:
         messagebox.showerror("Error", "Please select an expense to delete")
@@ -381,7 +434,12 @@ date_label = tk.Label(
 )
 date_label.grid(row=0, column=0, padx=10, pady=8, sticky="w")
 
-date_entry = tk.Entry(form_frame, width=30)
+date_entry = DateEntry(
+    form_frame,
+    width=27,
+    date_pattern="yyyy-mm-dd",
+    font=("Arial", 9),
+)
 date_entry.grid(row=0, column=1, padx=10, pady=8)
 
 category_label = tk.Label(
@@ -394,10 +452,9 @@ category_label.grid(row=1, column=0, padx=10, pady=8, sticky="w")
 category_var = tk.StringVar()
 category_var.set("Food")
 
-filter_category_dropdown = tk.OptionMenu(
-    search_frame,
+category_dropdown = tk.OptionMenu(
+    form_frame,
     category_var,
-    "All Categories",
     "Food",
     "Travel",
     "Shopping",
@@ -406,8 +463,8 @@ filter_category_dropdown = tk.OptionMenu(
     "Other",
 )
 
-filter_category_dropdown.grid(
-    row=2,
+category_dropdown.grid(
+    row=1,
     column=1,
     padx=10,
     pady=8,
@@ -510,9 +567,10 @@ filter_category_label.grid(
 filter_category_var = tk.StringVar()
 filter_category_var.set("All Categories")
 
-category_dropdown = tk.OptionMenu(
-    form_frame,
-    category_var,
+filter_category_dropdown = tk.OptionMenu(
+    search_frame,
+    filter_category_var,
+    "All Categories",
     "Food",
     "Travel",
     "Shopping",
@@ -520,15 +578,16 @@ category_dropdown = tk.OptionMenu(
     "Entertainment",
     "Other",
 )
+filter_category_dropdown.config(width=14)
 
-
-category_dropdown.grid(
-    row=1,
+filter_category_dropdown.grid(
+    row=2,
     column=1,
     padx=10,
     pady=8,
     sticky="ew",
 )
+
 
 filter_category_button = tk.Button(
     search_frame,
@@ -561,7 +620,12 @@ filter_date_label.grid(
     sticky="w",
 )
 
-filter_date_entry = tk.Entry(search_frame, width=15)
+filter_date_entry = DateEntry(
+    search_frame,
+    width=12,
+    date_pattern="yyyy-mm-dd",
+    font=("Arial", 9),
+)
 filter_date_entry.grid(
     row=4,
     column=1,
@@ -614,10 +678,38 @@ category_spending_button = tk.Button(
 )
 category_spending_button.pack(pady=5)
 
+lower_frame = tk.Frame(
+    root,
+    bg="#f4f6f8",
+)
+
+lower_frame.pack(
+    fill="both",
+    expand=True,
+    padx=30,
+    pady=10,
+)
+
+lower_frame.columnconfigure(0, weight=3)
+lower_frame.columnconfigure(1, weight=2)
+lower_frame.rowconfigure(0, weight=1)
+
+
 columns = ("ID", "Date", "Category", "Amount", "Description")
 
-table_frame = tk.Frame(root)
-table_frame.pack(fill="x", padx=30, pady=10)
+table_frame = tk.Frame(
+    lower_frame,
+    bg="white",
+    bd=1,
+    relief="solid",
+)
+
+table_frame.grid(
+    row=0,
+    column=0,
+    sticky="nsew",
+    padx=(0, 10),
+)
 
 # view_button = tk.Button(
 #     table_frame,
@@ -682,8 +774,17 @@ expense_table.pack(side="left", fill="x", expand=True)
 scrollbar.pack(side="right", fill="y")
 
 
-action_frame = tk.Frame(root)
-action_frame.pack(fill="x", padx=30, pady=(5, 10))
+action_frame = tk.Frame(
+    table_frame,
+    bg="white",
+)
+
+action_frame.pack(
+    fill="x",
+    padx=15,
+    pady=(10, 15),
+)
+
 
 edit_button = tk.Button(
     action_frame,
@@ -726,7 +827,58 @@ delete_button = tk.Button(
 )
 delete_button.pack(side="left", padx=10)
 
+
+chart_frame = tk.Frame(
+    lower_frame,
+    bg="white",
+    bd=1,
+    relief="solid",
+)
+
+chart_frame.grid(
+    row=0,
+    column=1,
+    sticky="nsew",
+    padx=(10, 0),
+)
+
+
+chart_heading = tk.Label(
+    chart_frame,
+    text="Category Spending",
+    font=("Arial", 14, "bold"),
+    bg="white",
+)
+
+chart_heading.pack(
+    anchor="w",
+    padx=20,
+    pady=(15, 10),
+)
+
+
+category_figure = Figure(
+    figsize=(4, 3),
+    dpi=100,
+)
+
+category_axis = category_figure.add_subplot(111)
+
+category_canvas = FigureCanvasTkAgg(
+    category_figure,
+    master=chart_frame,
+)
+
+category_canvas.get_tk_widget().pack(
+    fill="both",
+    expand=True,
+    padx=10,
+    pady=(0, 10),
+)
+
+
 handle_view_expenses()
 refresh_total_spending()
+refresh_category_chart()
 
 root.mainloop()
