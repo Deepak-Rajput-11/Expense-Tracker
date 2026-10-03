@@ -218,6 +218,21 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Added automatic chart refresh after adding, updating, or deleting expenses
 - Retested Add, Edit, Update, Delete, and Date Filter after the UI changes
 
+## Day 18 - Dashboard Improvements & Excel Report Export
+
+- Added live report statistics for Total Spending, Highest Category, and Total Expenses
+- Added Clear Form functionality and improved Add/Edit expense controls
+- Reorganized Search & Filter into a compact layout
+- Added a Clear Filter option to restore all expense records
+- Added double-click editing directly from the Expense Records table
+- Simplified table actions by removing the separate Edit Selected button
+- Added automatic form clearing after deleting an expense
+- Improved the Category Spending pie chart and legend layout
+- Added the current date to the dashboard header
+- Added Excel report export using Pandas and OpenPyXL
+- Added a Save As dialog for choosing the Excel report location
+- Retested Add, Update, Delete, Search, Category Filter, Date Filter, Clear Form, Clear Filter, Reports, Chart, View All, and Excel Export successfully
+
 ## Technologies Used
 
 - Python

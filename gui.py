@@ -1,5 +1,6 @@
 import tkinter as tk
-from tkinter import messagebox, ttk
+from tkinter import messagebox, ttk, filedialog
+from datetime import date
 from tkcalendar import DateEntry
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -17,6 +18,7 @@ from database import (
 from validation import validate_date, validate_category, validate_amount
 
 from reports import (
+    get_expense_dataframe,
     total_spending,
     category_wise_spending,
     expense_count,
@@ -41,6 +43,7 @@ def handle_add_expense():
 
         handle_view_expenses()
         refresh_total_spending()
+        refresh_report_stats()
         refresh_category_chart()
 
         date_entry.delete(0, tk.END)
@@ -131,10 +134,68 @@ def handle_filter_date():
         expense_table.insert("", tk.END, values=expense)
 
 
+def handle_filter():
+    category = filter_category_var.get()
+
+    if category != "All Categories":
+        handle_filter_category()
+    else:
+        handle_filter_date()
+
+
+def handle_clear_filter():
+    search_entry.delete(0, tk.END)
+    filter_category_var.set("All Categories")
+    filter_date_entry.set_date(date.today())
+
+    handle_view_expenses()
+
+
+def handle_export_report():
+    df = get_expense_dataframe()
+
+    if df.empty:
+        messagebox.showinfo(
+            "No Data",
+            "No expenses available to export",
+        )
+        return
+
+    file_path = filedialog.asksaveasfilename(
+        defaultextension=".xlsx",
+        filetypes=[("Excel Files", "*.xlsx")],
+        initialfile="Expense_Report.xlsx",
+        title="Save Expense Report",
+    )
+
+    if not file_path:
+        return
+
+    df.to_excel(
+        file_path,
+        index=False,
+    )
+
+    messagebox.showinfo(
+        "Success",
+        "Expense report exported successfully",
+    )
+
+
 def refresh_total_spending():
     total = total_spending()
     total_spending_var.set(f"Overall Spending: ₹{total:.2f}")
     return total
+
+
+def refresh_report_stats():
+    total = total_spending()
+    highest_category = highest_spending_category()
+    count = expense_count()
+
+    report_total_var.set(f"₹{total:.2f}")
+    report_category_var.set(highest_category)
+    report_count_var.set(str(count))
 
 
 def refresh_category_chart():
@@ -173,15 +234,21 @@ def refresh_category_chart():
         category_axis.legend(
             wedges,
             legend_labels,
-            loc="upper center",
-            bbox_to_anchor=(0.5, -0.05),
-            ncol=3,
+            loc="center left",
+            bbox_to_anchor=(1.0, 0.5),
             frameon=False,
+            fontsize=8,
         )
 
         category_axis.axis("equal")
 
-    category_figure.tight_layout()
+    category_figure.subplots_adjust(
+        left=0.05,
+        right=0.68,
+        top=0.95,
+        bottom=0.08,
+    )
+
     category_canvas.draw()
 
 
@@ -215,7 +282,7 @@ def handle_category_spending():
     messagebox.showinfo("Category-wise Spending", report)
 
 
-def handle_edit_expense():
+def handle_edit_expense(event=None):
     global editing_expense_id
 
     selected_item = expense_table.selection()
@@ -238,6 +305,20 @@ def handle_edit_expense():
 
     description_entry.delete(0, tk.END)
     description_entry.insert(0, expense_data[4])
+
+
+def handle_clear_form():
+    global editing_expense_id
+
+    editing_expense_id = None
+
+    date_entry.set_date(date.today())
+    category_var.set("Food")
+
+    amount_entry.delete(0, tk.END)
+    description_entry.delete(0, tk.END)
+
+    date_entry.focus()
 
 
 def handle_update_expense():
@@ -271,6 +352,7 @@ def handle_update_expense():
     messagebox.showinfo("Success", "Expense updated successfully")
     handle_view_expenses()
     refresh_total_spending()
+    refresh_report_stats()
     refresh_category_chart()
     editing_expense_id = None
 
@@ -295,13 +377,23 @@ def handle_delete_expense():
 
         if confirm:
             delete_expense(expense_id)
-            messagebox.showinfo("Success", "Expense deleted successfully")
+
             handle_view_expenses()
             refresh_total_spending()
+            refresh_report_stats()
             refresh_category_chart()
+            handle_clear_form()
+
+            messagebox.showinfo(
+                "Success",
+                "Expense deleted successfully",
+            )
 
     else:
-        messagebox.showerror("Error", "Please select an expense to delete")
+        messagebox.showerror(
+            "Error",
+            "Please select an expense to delete",
+        )
 
 
 root = tk.Tk()
@@ -313,6 +405,15 @@ root.configure(bg="#f4f6f8")
 
 total_spending_var = tk.StringVar()
 total_spending_var.set("Total Spending: ₹0.00")
+
+report_total_var = tk.StringVar()
+report_total_var.set("₹0.00")
+
+report_category_var = tk.StringVar()
+report_category_var.set("No Data")
+
+report_count_var = tk.StringVar()
+report_count_var.set("0")
 
 header_frame = tk.Frame(root, bg="#f4f6f8")
 header_frame.pack(fill="x", padx=30, pady=(20, 10))
@@ -336,14 +437,38 @@ subtitle = tk.Label(
 )
 subtitle.pack(anchor="w")
 
-total_spending_label = tk.Label(
+header_stats_frame = tk.Frame(
     header_frame,
+    bg="#f4f6f8",
+)
+
+header_stats_frame.pack(
+    side="right",
+    padx=20,
+)
+
+total_spending_label = tk.Label(
+    header_stats_frame,
     textvariable=total_spending_var,
     font=("Arial", 18, "bold"),
     bg="#f4f6f8",
 )
 
-total_spending_label.pack(side="right", padx=20)
+total_spending_label.pack(
+    anchor="e",
+)
+
+today_label = tk.Label(
+    header_stats_frame,
+    text=f"Today: {date.today().strftime('%d %b %Y')}",
+    font=("Arial", 10),
+    bg="#f4f6f8",
+)
+
+today_label.pack(
+    anchor="e",
+    pady=(3, 0),
+)
 
 main_frame = tk.Frame(root)
 main_frame.pack(fill="x", padx=30, pady=10)
@@ -376,7 +501,7 @@ main_frame.columnconfigure(2, weight=1)
 
 form_heading = tk.Label(
     left_frame,
-    text="Expense Details",
+    text="Add / Edit Expense",
     font=("Arial", 14, "bold"),
     bg="white",
 )
@@ -403,6 +528,9 @@ search_frame.pack(
     padx=20,
     pady=(0, 15),
 )
+search_frame.columnconfigure(0, weight=1)
+search_frame.columnconfigure(1, weight=1)
+search_frame.columnconfigure(2, weight=1)
 
 reports_frame = tk.Frame(
     main_frame,
@@ -426,6 +554,71 @@ reports_heading = tk.Label(
 )
 
 reports_heading.pack(pady=(0, 10))
+
+report_stats_frame = tk.Frame(
+    reports_frame,
+    bg="white",
+)
+
+report_stats_frame.pack(
+    fill="x",
+    padx=20,
+    pady=(0, 10),
+)
+
+report_total_label = tk.Label(
+    report_stats_frame,
+    text="Total Spending",
+    font=("Arial", 9),
+    bg="white",
+)
+
+report_total_label.pack(anchor="w")
+
+report_total_value = tk.Label(
+    report_stats_frame,
+    textvariable=report_total_var,
+    font=("Arial", 12, "bold"),
+    bg="white",
+)
+
+report_total_value.pack(anchor="w", pady=(0, 8))
+
+report_category_label = tk.Label(
+    report_stats_frame,
+    text="Highest Category",
+    font=("Arial", 9),
+    bg="white",
+)
+
+report_category_label.pack(anchor="w")
+
+report_category_value = tk.Label(
+    report_stats_frame,
+    textvariable=report_category_var,
+    font=("Arial", 12, "bold"),
+    bg="white",
+)
+
+report_category_value.pack(anchor="w", pady=(0, 8))
+
+report_count_label = tk.Label(
+    report_stats_frame,
+    text="Total Expenses",
+    font=("Arial", 9),
+    bg="white",
+)
+
+report_count_label.pack(anchor="w")
+
+report_count_value = tk.Label(
+    report_stats_frame,
+    textvariable=report_count_var,
+    font=("Arial", 12, "bold"),
+    bg="white",
+)
+
+report_count_value.pack(anchor="w")
 
 date_label = tk.Label(
     form_frame,
@@ -491,26 +684,62 @@ description_label.grid(row=3, column=0, padx=10, pady=8, sticky="w")
 description_entry = tk.Entry(form_frame, width=30)
 description_entry.grid(row=3, column=1, padx=10, pady=8, sticky="ew")
 
-add_button = tk.Button(
+form_button_frame = tk.Frame(
     form_frame,
+    bg="white",
+)
+
+form_button_frame.grid(
+    row=4,
+    column=0,
+    columnspan=2,
+    sticky="ew",
+    padx=10,
+    pady=(15, 10),
+)
+
+form_button_frame.columnconfigure(0, weight=1)
+form_button_frame.columnconfigure(1, weight=1)
+form_button_frame.columnconfigure(2, weight=1)
+
+add_button = tk.Button(
+    form_button_frame,
     text="Add Expense",
     command=handle_add_expense,
     bg="#2563eb",
     fg="white",
-    font=("Arial", 10, "bold"),
+    font=("Arial", 9, "bold"),
     relief="flat",
     cursor="hand2",
-    padx=15,
+    padx=10,
     pady=6,
 )
 
 add_button.grid(
-    row=4,
+    row=0,
     column=0,
-    columnspan=2,
-    pady=(15, 10),
+    sticky="ew",
+    padx=(0, 5),
 )
 
+clear_form_button = tk.Button(
+    form_button_frame,
+    text="Clear Form",
+    command=handle_clear_form,
+    bg="#e5e7eb",
+    font=("Arial", 9, "bold"),
+    relief="flat",
+    cursor="hand2",
+    padx=10,
+    pady=6,
+)
+
+clear_form_button.grid(
+    row=0,
+    column=2,
+    sticky="ew",
+    padx=(5, 0),
+)
 
 search_label = tk.Label(
     search_frame,
@@ -535,20 +764,64 @@ search_entry.grid(
 
 search_button = tk.Button(
     search_frame,
-    text="Search Expense",
+    text="Search",
     command=handle_search_expense,
+    bg="#16a34a",
+    fg="white",
+    font=("Arial", 9, "bold"),
+    relief="flat",
+    cursor="hand2",
+    padx=10,
+    pady=6,
+)
+
+search_button.grid(
+    row=3,
+    column=0,
+    sticky="ew",
+    padx=(10, 5),
+    pady=(12, 5),
+)
+
+filter_button = tk.Button(
+    search_frame,
+    text="Filter",
+    command=handle_filter,
+    bg="#9333ea",
+    fg="white",
+    font=("Arial", 9, "bold"),
+    relief="flat",
+    cursor="hand2",
+    padx=10,
+    pady=6,
+)
+
+filter_button.grid(
+    row=3,
+    column=1,
+    sticky="ew",
+    padx=5,
+    pady=(12, 5),
+)
+
+clear_filter_button = tk.Button(
+    search_frame,
+    text="Clear Filter",
+    command=handle_clear_filter,
     bg="#e5e7eb",
     font=("Arial", 9, "bold"),
     relief="flat",
     cursor="hand2",
     padx=10,
-    pady=4,
+    pady=6,
 )
-search_button.grid(
-    row=1,
-    column=0,
-    columnspan=2,
-    pady=(5, 10),
+
+clear_filter_button.grid(
+    row=3,
+    column=2,
+    sticky="ew",
+    padx=(5, 10),
+    pady=(12, 5),
 )
 
 filter_category_label = tk.Label(
@@ -556,11 +829,12 @@ filter_category_label = tk.Label(
     text="Filter by Category:",
     bg="white",
 )
+
 filter_category_label.grid(
-    row=2,
+    row=1,
     column=0,
     padx=10,
-    pady=8,
+    pady=6,
     sticky="w",
 )
 
@@ -578,34 +852,17 @@ filter_category_dropdown = tk.OptionMenu(
     "Entertainment",
     "Other",
 )
+
 filter_category_dropdown.config(width=14)
 
 filter_category_dropdown.grid(
-    row=2,
+    row=1,
     column=1,
     padx=10,
-    pady=8,
+    pady=6,
     sticky="ew",
 )
 
-
-filter_category_button = tk.Button(
-    search_frame,
-    text="Filter Category",
-    command=handle_filter_category,
-    bg="#e5e7eb",
-    font=("Arial", 9, "bold"),
-    relief="flat",
-    cursor="hand2",
-    padx=10,
-    pady=4,
-)
-filter_category_button.grid(
-    row=3,
-    column=0,
-    columnspan=2,
-    pady=(5, 10),
-)
 
 filter_date_label = tk.Label(
     search_frame,
@@ -613,10 +870,10 @@ filter_date_label = tk.Label(
     bg="white",
 )
 filter_date_label.grid(
-    row=4,
+    row=2,
     column=0,
     padx=10,
-    pady=8,
+    pady=6,
     sticky="w",
 )
 
@@ -627,29 +884,13 @@ filter_date_entry = DateEntry(
     font=("Arial", 9),
 )
 filter_date_entry.grid(
-    row=4,
+    row=2,
     column=1,
     padx=10,
-    pady=8,
+    pady=6,
+    sticky="ew",
 )
 
-filter_date_button = tk.Button(
-    search_frame,
-    text="Filter Date",
-    command=handle_filter_date,
-    bg="#e5e7eb",
-    font=("Arial", 9, "bold"),
-    relief="flat",
-    cursor="hand2",
-    padx=10,
-    pady=4,
-)
-filter_date_button.grid(
-    row=5,
-    column=0,
-    columnspan=2,
-    pady=(5, 10),
-)
 
 total_button = tk.Button(
     reports_frame,
@@ -665,18 +906,20 @@ total_button = tk.Button(
 )
 total_button.pack(pady=5)
 
-category_spending_button = tk.Button(
+export_button = tk.Button(
     reports_frame,
-    text="Show Category Spending",
-    command=handle_category_spending,
-    bg="#e5e7eb",
+    text="Export Report",
+    command=handle_export_report,
+    bg="#16a34a",
+    fg="white",
     font=("Arial", 9, "bold"),
     relief="flat",
     cursor="hand2",
     padx=10,
     pady=4,
 )
-category_spending_button.pack(pady=5)
+
+export_button.pack(pady=5)
 
 lower_frame = tk.Frame(
     root,
@@ -729,19 +972,6 @@ records_heading = tk.Label(
 )
 records_heading.pack(side="left")
 
-show_all_button = tk.Button(
-    records_header,
-    text="Show All",
-    command=handle_view_expenses,
-    bg="#e5e7eb",
-    font=("Arial", 9, "bold"),
-    relief="flat",
-    cursor="hand2",
-    padx=12,
-    pady=4,
-)
-show_all_button.pack(side="right")
-
 tree_frame = tk.Frame(table_frame)
 tree_frame.pack(fill="x")
 
@@ -751,6 +981,10 @@ expense_table = ttk.Treeview(
     show="headings",
     height=6,
     selectmode="browse",
+)
+expense_table.bind(
+    "<Double-1>",
+    handle_edit_expense,
 )
 
 scrollbar = ttk.Scrollbar(
@@ -785,33 +1019,25 @@ action_frame.pack(
     pady=(10, 15),
 )
 
-
-edit_button = tk.Button(
-    action_frame,
-    text="Edit Selected",
-    command=handle_edit_expense,
-    bg="#e5e7eb",
-    font=("Arial", 9, "bold"),
-    relief="flat",
-    cursor="hand2",
-    padx=12,
-    pady=5,
-)
-edit_button.pack(side="left", padx=(0, 10))
-
 update_button = tk.Button(
-    action_frame,
+    form_button_frame,
     text="Update Expense",
     command=handle_update_expense,
-    bg="#2563eb",
-    fg="white",
+    bg="#f59e0b",
+    fg="black",
     font=("Arial", 9, "bold"),
     relief="flat",
     cursor="hand2",
-    padx=12,
-    pady=5,
+    padx=10,
+    pady=6,
 )
-update_button.pack(side="left", padx=10)
+
+update_button.grid(
+    row=0,
+    column=1,
+    sticky="ew",
+    padx=5,
+)
 
 delete_button = tk.Button(
     action_frame,
@@ -827,6 +1053,19 @@ delete_button = tk.Button(
 )
 delete_button.pack(side="left", padx=10)
 
+view_all_button = tk.Button(
+    action_frame,
+    text="View All",
+    command=handle_view_expenses,
+    bg="#e5e7eb",
+    font=("Arial", 9, "bold"),
+    relief="flat",
+    cursor="hand2",
+    padx=12,
+    pady=5,
+)
+
+view_all_button.pack(side="left", padx=10)
 
 chart_frame = tk.Frame(
     lower_frame,
@@ -879,6 +1118,7 @@ category_canvas.get_tk_widget().pack(
 
 handle_view_expenses()
 refresh_total_spending()
+refresh_report_stats()
 refresh_category_chart()
 
 root.mainloop()
