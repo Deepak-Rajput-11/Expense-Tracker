@@ -233,6 +233,18 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Added a Save As dialog for choosing the Excel report location
 - Retested Add, Update, Delete, Search, Category Filter, Date Filter, Clear Form, Clear Filter, Reports, Chart, View All, and Excel Export successfully
 
+## Day 19 - Excel Report Improvements & Dashboard Cleanup
+
+- Improved the Excel report export with better formatting and readability
+- Added bold column headings to exported expense reports
+- Added appropriate column widths for expense data
+- Added currency formatting to exported expense amounts
+- Added Total Spending and Total Expenses summary information to the Excel report
+- Improved the Reports dashboard to show the spending amount for the highest spending category
+- Updated Add and Update workflows to reset the date field to the current date
+- Improved consistency between Add Expense, Update Expense, and Clear Form
+- Retested Add, Update, Reports, Category Spending chart, and Excel export successfully
+
 ## Technologies Used
 
 - Python

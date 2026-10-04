@@ -2,8 +2,10 @@ import tkinter as tk
 from tkinter import messagebox, ttk, filedialog
 from datetime import date
 from tkcalendar import DateEntry
+import pandas as pd
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from openpyxl.styles import Font
 
 from database import (
     add_expense,
@@ -46,10 +48,10 @@ def handle_add_expense():
         refresh_report_stats()
         refresh_category_chart()
 
-        date_entry.delete(0, tk.END)
+        date_entry.set_date(date.today())
+        category_var.set("Food")
         amount_entry.delete(0, tk.END)
         description_entry.delete(0, tk.END)
-        category_var.set("Food")
         date_entry.focus()
 
     else:
@@ -171,10 +173,60 @@ def handle_export_report():
     if not file_path:
         return
 
-    df.to_excel(
-        file_path,
-        index=False,
-    )
+    with pd.ExcelWriter(file_path, engine="openpyxl") as writer:
+        df.to_excel(
+            writer,
+            sheet_name="Expenses",
+            index=False,
+        )
+
+        worksheet = writer.sheets["Expenses"]
+
+        # Make column headings bold
+        for cell in worksheet[1]:
+            cell.font = Font(bold=True)
+
+        # Adjust column widths
+        worksheet.column_dimensions["A"].width = 12
+        worksheet.column_dimensions["B"].width = 15
+        worksheet.column_dimensions["C"].width = 18
+        worksheet.column_dimensions["D"].width = 15
+        worksheet.column_dimensions["E"].width = 30
+
+        # Format expense amounts as currency
+        for cell in worksheet["D"][1:]:
+            cell.number_format = "₹#,##0.00"
+
+        # Add summary below expense records
+        summary_row = len(df) + 3
+
+        total_label_cell = worksheet.cell(
+            row=summary_row,
+            column=1,
+            value="Total Spending",
+        )
+
+        total_label_cell.font = Font(bold=True)
+
+        worksheet.cell(
+            row=summary_row,
+            column=2,
+            value=float(df["amount"].sum()),
+        )
+
+        count_label_cell = worksheet.cell(
+            row=summary_row + 1,
+            column=1,
+            value="Total Expenses",
+        )
+
+        count_label_cell.font = Font(bold=True)
+
+        worksheet.cell(
+            row=summary_row + 1,
+            column=2,
+            value=len(df),
+        )
 
     messagebox.showinfo(
         "Success",
@@ -193,9 +245,17 @@ def refresh_report_stats():
     highest_category = highest_spending_category()
     count = expense_count()
 
+    category_totals = category_wise_spending()
+
     report_total_var.set(f"₹{total:.2f}")
-    report_category_var.set(highest_category)
     report_count_var.set(str(count))
+
+    if category_totals.empty:
+        report_category_var.set("No Data")
+    else:
+        highest_amount = category_totals.max()
+
+        report_category_var.set(f"{highest_category} — ₹{highest_amount:.2f}")
 
 
 def refresh_category_chart():
@@ -356,7 +416,7 @@ def handle_update_expense():
     refresh_category_chart()
     editing_expense_id = None
 
-    date_entry.delete(0, tk.END)
+    date_entry.set_date(date.today())
     category_var.set("Food")
     amount_entry.delete(0, tk.END)
     description_entry.delete(0, tk.END)
