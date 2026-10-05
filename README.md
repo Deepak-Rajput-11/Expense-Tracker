@@ -245,6 +245,21 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Improved consistency between Add Expense, Update Expense, and Clear Form
 - Retested Add, Update, Reports, Category Spending chart, and Excel export successfully
 
+## Day 20 - Final UI Polish & Code Cleanup
+
+- Added consistent currency formatting to the Expense Records table
+- Expense amounts now display with the ₹ symbol, commas, and two decimal places
+- Applied currency formatting consistently to View All, Search, Category Filter, and Date Filter results
+- Updated double-click editing to correctly handle formatted currency values
+- Removed obsolete category spending popup code
+- Removed old commented GUI code
+- Added a soft dashboard background for better visual separation
+- Added distinct pastel colors to the Add/Edit, Search & Filter, Reports, Expense Records, and Category Spending sections
+- Matched the Matplotlib chart background with the Category Spending card
+- Improved the overall visual organization and readability of the dashboard
+- Retested View All, Search, Category Filter, Date Filter, and double-click editing successfully
+- Completed the final UI/UX development phase of the Expense Tracker
+
 ## Technologies Used
 
 - Python

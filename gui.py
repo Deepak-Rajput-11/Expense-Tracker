@@ -58,6 +58,14 @@ def handle_add_expense():
         messagebox.showerror("Error", "Invalid expense data")
 
 
+def format_expense_for_table(expense):
+    expense = list(expense)
+
+    expense[3] = f"₹{float(expense[3]):,.2f}"
+
+    return expense
+
+
 def handle_view_expenses():
     expenses = view_expenses()
 
@@ -65,7 +73,13 @@ def handle_view_expenses():
         expense_table.delete(row)
 
     for expense in expenses:
-        expense_table.insert("", tk.END, values=expense)
+        formatted_expense = format_expense_for_table(expense)
+
+        expense_table.insert(
+            "",
+            tk.END,
+            values=formatted_expense,
+        )
 
 
 def handle_search_expense():
@@ -84,10 +98,13 @@ def handle_search_expense():
     for row in expense_table.get_children():
         expense_table.delete(row)
 
-    expense_table.insert("", tk.END, values=expense)
+    formatted_expense = format_expense_for_table(expense)
 
-
-editing_expense_id = None
+    expense_table.insert(
+        "",
+        tk.END,
+        values=formatted_expense,
+    )
 
 
 def handle_filter_category():
@@ -110,7 +127,13 @@ def handle_filter_category():
         expense_table.delete(row)
 
     for expense in expenses:
-        expense_table.insert("", tk.END, values=expense)
+        formatted_expense = format_expense_for_table(expense)
+
+        expense_table.insert(
+            "",
+            tk.END,
+            values=formatted_expense,
+        )
 
 
 def handle_filter_date():
@@ -133,7 +156,13 @@ def handle_filter_date():
         expense_table.delete(row)
 
     for expense in expenses:
-        expense_table.insert("", tk.END, values=expense)
+        formatted_expense = format_expense_for_table(expense)
+
+        expense_table.insert(
+            "",
+            tk.END,
+            values=formatted_expense,
+        )
 
 
 def handle_filter():
@@ -327,21 +356,6 @@ def handle_total_spending():
     )
 
 
-def handle_category_spending():
-    category_totals = category_wise_spending()
-
-    if category_totals.empty:
-        messagebox.showinfo("No Data", "No expenses available for the report")
-        return
-
-    report = ""
-
-    for category, amount in category_totals.items():
-        report += f"{category}: ₹{amount:.2f}\n"
-
-    messagebox.showinfo("Category-wise Spending", report)
-
-
 def handle_edit_expense(event=None):
     global editing_expense_id
 
@@ -361,7 +375,11 @@ def handle_edit_expense(event=None):
     category_var.set(expense_data[2])
 
     amount_entry.delete(0, tk.END)
-    amount_entry.insert(0, expense_data[3])
+
+    formatted_amount = expense_data[3]
+    clean_amount = formatted_amount.replace("₹", "").replace(",", "")
+
+    amount_entry.insert(0, clean_amount)
 
     description_entry.delete(0, tk.END)
     description_entry.insert(0, expense_data[4])
@@ -461,7 +479,14 @@ root = tk.Tk()
 root.title("Expense Tracker")
 root.geometry("1100x700")
 root.minsize(1000, 650)
-root.configure(bg="#f4f6f8")
+root.configure(bg="#eaf3ff")
+
+add_card_color = "#f0f7ff"
+search_card_color = "#f3fbf5"
+reports_card_color = "#fff8e8"
+records_card_color = "#f8f5ff"
+chart_card_color = "#fff5f5"
+
 
 total_spending_var = tk.StringVar()
 total_spending_var.set("Total Spending: ₹0.00")
@@ -475,17 +500,17 @@ report_category_var.set("No Data")
 report_count_var = tk.StringVar()
 report_count_var.set("0")
 
-header_frame = tk.Frame(root, bg="#f4f6f8")
+header_frame = tk.Frame(root, bg="#eaf3ff")
 header_frame.pack(fill="x", padx=30, pady=(20, 10))
 
-title_frame = tk.Frame(header_frame, bg="#f4f6f8")
+title_frame = tk.Frame(header_frame, bg="#eaf3ff")
 title_frame.pack(side="left")
 
 heading = tk.Label(
     title_frame,
     text="Expense Tracker",
     font=("Arial", 24, "bold"),
-    bg="#f4f6f8",
+    bg="#eaf3ff",
 )
 heading.pack(anchor="w")
 
@@ -493,13 +518,13 @@ subtitle = tk.Label(
     title_frame,
     text="Track Smarter. Spend Better.",
     font=("Arial", 11),
-    bg="#f4f6f8",
+    bg="#eaf3ff",
 )
 subtitle.pack(anchor="w")
 
 header_stats_frame = tk.Frame(
     header_frame,
-    bg="#f4f6f8",
+    bg="#eaf3ff",
 )
 
 header_stats_frame.pack(
@@ -511,7 +536,7 @@ total_spending_label = tk.Label(
     header_stats_frame,
     textvariable=total_spending_var,
     font=("Arial", 18, "bold"),
-    bg="#f4f6f8",
+    bg="#eaf3ff",
 )
 
 total_spending_label.pack(
@@ -522,7 +547,7 @@ today_label = tk.Label(
     header_stats_frame,
     text=f"Today: {date.today().strftime('%d %b %Y')}",
     font=("Arial", 10),
-    bg="#f4f6f8",
+    bg="#eaf3ff",
 )
 
 today_label.pack(
@@ -535,14 +560,14 @@ main_frame.pack(fill="x", padx=30, pady=10)
 
 left_frame = tk.Frame(
     main_frame,
-    bg="white",
+    bg=add_card_color,
     bd=1,
     relief="solid",
 )
 
 right_frame = tk.Frame(
     main_frame,
-    bg="white",
+    bg=search_card_color,
     bd=1,
     relief="solid",
 )
@@ -563,23 +588,24 @@ form_heading = tk.Label(
     left_frame,
     text="Add / Edit Expense",
     font=("Arial", 14, "bold"),
-    bg="white",
+    bg=add_card_color,
 )
 form_heading.pack(pady=(15, 10))
-form_frame = tk.Frame(left_frame, bg="white")
+
+form_frame = tk.Frame(left_frame, bg=add_card_color)
 form_frame.pack(padx=30, pady=10)
 
 tools_heading = tk.Label(
     right_frame,
     text="Search & Filter",
     font=("Arial", 14, "bold"),
-    bg="white",
+    bg=search_card_color,
 )
 tools_heading.pack(pady=(15, 10))
 
 search_frame = tk.Frame(
     right_frame,
-    bg="white",
+    bg=search_card_color,
 )
 
 search_frame.pack(
@@ -588,13 +614,14 @@ search_frame.pack(
     padx=20,
     pady=(0, 15),
 )
+
 search_frame.columnconfigure(0, weight=1)
 search_frame.columnconfigure(1, weight=1)
 search_frame.columnconfigure(2, weight=1)
 
 reports_frame = tk.Frame(
     main_frame,
-    bg="white",
+    bg=reports_card_color,
     bd=1,
     relief="solid",
 )
@@ -610,14 +637,14 @@ reports_heading = tk.Label(
     reports_frame,
     text="Reports",
     font=("Arial", 14, "bold"),
-    bg="white",
+    bg=reports_card_color,
 )
 
 reports_heading.pack(pady=(0, 10))
 
 report_stats_frame = tk.Frame(
     reports_frame,
-    bg="white",
+    bg=reports_card_color,
 )
 
 report_stats_frame.pack(
@@ -630,7 +657,7 @@ report_total_label = tk.Label(
     report_stats_frame,
     text="Total Spending",
     font=("Arial", 9),
-    bg="white",
+    bg=reports_card_color,
 )
 
 report_total_label.pack(anchor="w")
@@ -639,7 +666,7 @@ report_total_value = tk.Label(
     report_stats_frame,
     textvariable=report_total_var,
     font=("Arial", 12, "bold"),
-    bg="white",
+    bg=reports_card_color,
 )
 
 report_total_value.pack(anchor="w", pady=(0, 8))
@@ -648,7 +675,7 @@ report_category_label = tk.Label(
     report_stats_frame,
     text="Highest Category",
     font=("Arial", 9),
-    bg="white",
+    bg=reports_card_color,
 )
 
 report_category_label.pack(anchor="w")
@@ -657,7 +684,7 @@ report_category_value = tk.Label(
     report_stats_frame,
     textvariable=report_category_var,
     font=("Arial", 12, "bold"),
-    bg="white",
+    bg=reports_card_color,
 )
 
 report_category_value.pack(anchor="w", pady=(0, 8))
@@ -666,7 +693,7 @@ report_count_label = tk.Label(
     report_stats_frame,
     text="Total Expenses",
     font=("Arial", 9),
-    bg="white",
+    bg=reports_card_color,
 )
 
 report_count_label.pack(anchor="w")
@@ -675,7 +702,7 @@ report_count_value = tk.Label(
     report_stats_frame,
     textvariable=report_count_var,
     font=("Arial", 12, "bold"),
-    bg="white",
+    bg=reports_card_color,
 )
 
 report_count_value.pack(anchor="w")
@@ -683,7 +710,7 @@ report_count_value.pack(anchor="w")
 date_label = tk.Label(
     form_frame,
     text="Date (YYYY-MM-DD):",
-    bg="white",
+    bg=add_card_color,
 )
 date_label.grid(row=0, column=0, padx=10, pady=8, sticky="w")
 
@@ -698,7 +725,7 @@ date_entry.grid(row=0, column=1, padx=10, pady=8)
 category_label = tk.Label(
     form_frame,
     text="Category:",
-    bg="white",
+    bg=add_card_color,
 )
 category_label.grid(row=1, column=0, padx=10, pady=8, sticky="w")
 
@@ -727,7 +754,7 @@ category_dropdown.grid(
 amount_label = tk.Label(
     form_frame,
     text="Amount:",
-    bg="white",
+    bg=add_card_color,
 )
 amount_label.grid(row=2, column=0, padx=10, pady=8, sticky="w")
 
@@ -737,7 +764,7 @@ amount_entry.grid(row=2, column=1, padx=10, pady=8, sticky="ew")
 description_label = tk.Label(
     form_frame,
     text="Description (Optional):",
-    bg="white",
+    bg=add_card_color,
 )
 description_label.grid(row=3, column=0, padx=10, pady=8, sticky="w")
 
@@ -746,7 +773,7 @@ description_entry.grid(row=3, column=1, padx=10, pady=8, sticky="ew")
 
 form_button_frame = tk.Frame(
     form_frame,
-    bg="white",
+    bg=add_card_color,
 )
 
 form_button_frame.grid(
@@ -804,8 +831,9 @@ clear_form_button.grid(
 search_label = tk.Label(
     search_frame,
     text="Search Expense by ID:",
-    bg="white",
+    bg=search_card_color,
 )
+
 search_label.grid(
     row=0,
     column=0,
@@ -887,7 +915,7 @@ clear_filter_button.grid(
 filter_category_label = tk.Label(
     search_frame,
     text="Filter by Category:",
-    bg="white",
+    bg=search_card_color,
 )
 
 filter_category_label.grid(
@@ -927,8 +955,9 @@ filter_category_dropdown.grid(
 filter_date_label = tk.Label(
     search_frame,
     text="Date:",
-    bg="white",
+    bg=search_card_color,
 )
+
 filter_date_label.grid(
     row=2,
     column=0,
@@ -983,7 +1012,7 @@ export_button.pack(pady=5)
 
 lower_frame = tk.Frame(
     root,
-    bg="#f4f6f8",
+    bg="#eaf3ff",
 )
 
 lower_frame.pack(
@@ -1002,7 +1031,7 @@ columns = ("ID", "Date", "Category", "Amount", "Description")
 
 table_frame = tk.Frame(
     lower_frame,
-    bg="white",
+    bg=records_card_color,
     bd=1,
     relief="solid",
 )
@@ -1014,25 +1043,30 @@ table_frame.grid(
     padx=(0, 10),
 )
 
-# view_button = tk.Button(
-#     table_frame,
-#     text="View Expenses",
-#     command=handle_view_expenses,
-# )
-# view_button.pack(pady=(0, 5))
+records_header = tk.Frame(
+    table_frame,
+    bg=records_card_color,
+)
 
-
-records_header = tk.Frame(table_frame)
-records_header.pack(fill="x", pady=(0, 8))
+records_header.pack(
+    fill="x",
+    pady=(0, 8),
+)
 
 records_heading = tk.Label(
     records_header,
     text="Expense Records",
     font=("Arial", 14, "bold"),
+    bg=records_card_color,
 )
+
 records_heading.pack(side="left")
 
-tree_frame = tk.Frame(table_frame)
+tree_frame = tk.Frame(
+    table_frame,
+    bg=records_card_color,
+)
+
 tree_frame.pack(fill="x")
 
 expense_table = ttk.Treeview(
@@ -1070,7 +1104,7 @@ scrollbar.pack(side="right", fill="y")
 
 action_frame = tk.Frame(
     table_frame,
-    bg="white",
+    bg=records_card_color,
 )
 
 action_frame.pack(
@@ -1129,7 +1163,7 @@ view_all_button.pack(side="left", padx=10)
 
 chart_frame = tk.Frame(
     lower_frame,
-    bg="white",
+    bg=chart_card_color,
     bd=1,
     relief="solid",
 )
@@ -1146,7 +1180,7 @@ chart_heading = tk.Label(
     chart_frame,
     text="Category Spending",
     font=("Arial", 14, "bold"),
-    bg="white",
+    bg=chart_card_color,
 )
 
 chart_heading.pack(
@@ -1159,9 +1193,11 @@ chart_heading.pack(
 category_figure = Figure(
     figsize=(4, 3),
     dpi=100,
+    facecolor=chart_card_color,
 )
 
 category_axis = category_figure.add_subplot(111)
+category_axis.set_facecolor(chart_card_color)
 
 category_canvas = FigureCanvasTkAgg(
     category_figure,
