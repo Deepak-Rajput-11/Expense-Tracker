@@ -260,6 +260,20 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Retested View All, Search, Category Filter, Date Filter, and double-click editing successfully
 - Completed the final UI/UX development phase of the Expense Tracker
 
+## Day 21 - Code Review & Edge-Case Testing
+
+- Tested amount validation with blank, text, zero, negative, and valid values
+- Tested date validation with past, current, and future dates
+- Verified Search, Category Filter, Date Filter, and Clear Filter edge cases
+- Tested Update and Delete workflows with invalid input and missing selections
+- Verified delete confirmation and automatic dashboard refresh
+- Tested Excel report export and Save As cancellation
+- Verified SQLite data persistence after restarting the application
+- Reviewed empty-data handling for reports, charts, and Excel export
+- Simplified main.py to act as the application entry point
+- Performed a complete regression test covering Add, Search, Update, Filter, Export, and Delete
+- Confirmed that Expense Records, Overall Spending, Reports, and Category Spending remain synchronized
+
 ## Technologies Used
 
 - Python
