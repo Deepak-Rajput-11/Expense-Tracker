@@ -46,6 +46,66 @@ Expense-Tracker/
 └── expenses.db         # Created automatically when the application runs
 ```
 
+## How to Run
+
+1. Clone or download the repository.
+
+2. Open a terminal inside the `Expense-Tracker` folder.
+
+3. Install the required dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+4. Run the application:
+
+```bash
+python main.py
+```
+
+The SQLite database (`expenses.db`) is created automatically when the application runs.
+
+## Application Flow
+
+```text
+User Input
+    ↓
+Tkinter GUI
+    ↓
+Input Validation
+    ↓
+SQLite Database (CRUD)
+    ↓
+Pandas Analysis
+    ↓
+Dashboard Reports + Matplotlib Chart
+    ↓
+Excel Report Export using OpenPyXL
+```
+
+The user can add, search, filter, update, and delete expenses through the graphical interface. After expense data changes, the Expense Records table, Overall Spending, report statistics, and Category Spending chart are automatically refreshed to keep the dashboard synchronized.
+
+## What I Learned
+
+- Building a complete desktop application using Python and Tkinter
+- Organizing an application into separate GUI, database, validation, and reporting modules
+- Performing CRUD operations using SQLite
+- Writing parameterized SQL queries for database operations
+- Validating user input and handling invalid or empty data
+- Displaying and editing database records using Tkinter Treeview
+- Using Pandas DataFrames for expense analysis and summary calculations
+- Using `groupby()`, `sum()`, `mean()`, `idxmax()`, `shape`, and empty-data checks with Pandas
+- Embedding Matplotlib charts inside a Tkinter application
+- Using TkCalendar for user-friendly date selection
+- Exporting expense data to Excel using Pandas
+- Formatting Excel reports using OpenPyXL
+- Using file dialogs for choosing export locations
+- Keeping GUI tables, reports, totals, and charts synchronized after database changes
+- Testing edge cases and performing complete regression testing
+- Managing project versions and documentation using Git and GitHub
+- Packaging a Python GUI application as a standalone Windows executable using PyInstaller
+
 ## Screenshots
 
 ### Expense Tracker Dashboard
