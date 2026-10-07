@@ -1,19 +1,62 @@
 # Expense Tracker
 
-A desktop Expense Tracker application built using Python, Tkinter, SQLite, and Pandas.
+A desktop-based Expense Tracker application built with Python that allows users to record, manage, analyze, and export their daily expenses through an interactive graphical interface.
 
-The project allows users to manage daily expenses, store them permanently, filter expense records, and analyze spending.
+The application uses SQLite for persistent data storage, Tkinter for the desktop interface, Pandas for expense analysis, Matplotlib for spending visualization, and OpenPyXL for Excel report generation.
 
 ## Features
 
-- Add expenses
-- View expenses
+- Add, view, update, and delete expense records
 - Search expenses by ID
-- Update expenses
-- Delete expenses
-- Filter expenses by category and date
-- View total spending
-- View category-wise spending
+- Filter expenses by category or date
+- Validate expense amounts, categories, and dates
+- Store expense data permanently using SQLite
+- Display live overall spending
+- View total expenses and highest spending category
+- Visualize category-wise spending using a pie chart
+- Edit expenses directly by double-clicking table records
+- Automatically refresh dashboard statistics and charts
+- Export expense records to formatted Excel reports
+- Use calendar date pickers for expense entry and filtering
+- Handle invalid input, empty results, and export cancellation
+
+## Technologies Used
+
+- Python
+- Tkinter
+- SQLite
+- Pandas
+- Matplotlib
+- TkCalendar
+- OpenPyXL
+- Git & GitHub
+
+## Project Structure
+
+```text
+Expense-Tracker/
+│
+├── main.py             # Application entry point
+├── gui.py              # Tkinter graphical user interface
+├── database.py         # SQLite database operations
+├── validation.py       # Input validation
+├── reports.py          # Pandas-based expense analysis
+├── requirements.txt    # Project dependencies
+├── README.md           # Project documentation
+└── expenses.db         # Created automatically when the application runs
+```
+
+## Screenshots
+
+### Expense Tracker Dashboard
+
+![Expense Tracker Dashboard](screenshots/expense_tracker_dashboard.png)
+
+### Excel Expense Report
+
+![Excel Expense Report](screenshots/expense_report_excel.png)
+
+## Development Journey
 
 ## Day 1 - Project Setup & Database Foundation
 
@@ -274,14 +317,17 @@ The project allows users to manage daily expenses, store them permanently, filte
 - Performed a complete regression test covering Add, Search, Update, Filter, Export, and Delete
 - Confirmed that Expense Records, Overall Spending, Reports, and Category Spending remain synchronized
 
-## Technologies Used
+## Day 22 - Project Documentation & Finalization
 
-- Python
-- Tkinter
-- SQLite
-- Pandas
-- Git & GitHub
+- Added a complete project README with features, technologies, setup, and usage instructions
+- Added requirements.txt for external Python dependencies
+- Added final Expense Tracker dashboard screenshot
+- Added final Excel expense report screenshot
+- Cleaned temporary and unnecessary project files
+- Updated .gitignore for generated and temporary files
+- Completed final repository cleanup and documentation
+- Finalized the Expense Tracker for GitHub and portfolio use
 
 ## Project Status
 
-🚧 In Progress
+✅ Completed — October 2026

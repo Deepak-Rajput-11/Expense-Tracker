@@ -1,2 +1,6 @@
 expenses.db
 __pycache__/
+tempCodeRunnerFile.py
+build/
+dist/
+*.spec
